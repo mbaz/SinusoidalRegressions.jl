@@ -1,0 +1,5 @@
+.github
+Manifest.toml
+docs/build/
+docs/stable/
+docs/dev/

@@ -1,0 +1,18 @@
+name = "SinusoidalRegressions"
+uuid = "48dee9f3-50d2-49a3-a3c9-e990db172bec"
+authors = ["Miguel Bazdresch <miguelb@2pif.info> and contributors"]
+version = "0.1.0"
+
+[deps]
+LsqFit = "2fda8390-95c7-5789-9bda-21331edee243"
+RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
+SnoopPrecompile = "66db9d55-30c0-4569-8b51-7e840670fc0c"
+
+[compat]
+julia = "1.8"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
