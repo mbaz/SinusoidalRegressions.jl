@@ -9,12 +9,13 @@ The data is fit to the model ``s(x; f, DC, Q, I) = DC + Q\\sin(2πfx) + I\\cos(2
 values in `X` must be sorted in ascending order.
 
 The Levenberg-Marquardt algorithm used by `LsqFit.jl` requires an initial guess
-of the parameters `f`, `DC`, `Q` and `I`. If no initial guess is provided, then
-one is calculated using [`sinfit_j`](@ref).
+of all four model parameters. If no initial guess is provided, then one is calculated
+using [`sinfit_j`](@ref).
 
 All keyword arguments provided are directly passed to `LsqFit.curve_fit`.
 
-See also [`SinusoidP`](@ref), [`sinfit_j`](@ref), [LsqFit.jl](https://github.com/JuliaNLSolvers/LsqFit.jl),
+See also [`SinusoidP`](@ref), [`sinfit_j`](@ref),
+[LsqFit.jl](https://github.com/JuliaNLSolvers/LsqFit.jl),
 [`curve_fit`](https://github.com/JuliaNLSolvers/LsqFit.jl)
 """
 function sinfit(X, Y, guess::SinusoidP = sinfit_j(X, Y) ; kwargs...)
@@ -38,12 +39,13 @@ The data is fit to the model ``s(x; DC, Q, I) = DC + Q\\sin(2πfx) + I\\cos(2πf
 values in `X` must be sorted in ascending order.
 
 The Levenberg-Marquardt algorithm used by `LsqFit.jl` requires an initial guess
-of the parameters, `DC`, `Q` and `I`. If no initial guess is provided, then one is
+of all three parameters, `DC`, `Q` and `I`. If no initial guess is provided, then one is
 calculated using the linear regression algorithm from IEEE 1057 (see [`ieee1057`](@ref)).
 
 All keyword arguments provided are directly passed to `LsqFit.curve_fit`.
 
-See also [`SinusoidP`](@ref), [`ieee1057`](@ref), [`curve_fit`](https://github.com/JuliaNLSolvers/LsqFit.jl).
+See also [`SinusoidP`](@ref), [`ieee1057`](@ref),
+[`curve_fit`](https://github.com/JuliaNLSolvers/LsqFit.jl).
 """
 function sinfit(X, Y, f ; kwargs...)
     # pre-fit with IEEE 1057
