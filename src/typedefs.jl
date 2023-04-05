@@ -25,13 +25,12 @@ struct SinusoidP{T <: Real} <: SinusoidalFunctionParameters
 end
 
 """
-    SinusoidP{T}(f, DC, Q, I ; polar = false)
+    SinusoidP{T}(f, DC, Q, I)
 
 Construct a `SinusoidP{T}` with the given parameters, promoting to a common type `T` if
 necessary.
 
-If the keyword argument `polar` is `true`, then the arguments are interpreted as frequency,
-DC, amplitude `A` and phase `ϕ` in the model ``s(x) = DC + A\\cos(2πfx + ϕ)``.
+To express the model as ``s(x) = M\\cos(2πfx + θ)``, use the `torect` function.
 
 Examples
 ========
@@ -44,23 +43,15 @@ Sinusoidal parameters SinusoidP{Float64}:
   Sine amplitude (Q)  : -0.5
   Cosine amplitude (I): 1.2
 
-julia> SinusoidP(1, 0, 1, 0, polar = true)  # A pure cosine
+julia> SinusoidP(1, 0, torect(1, -π/2)...)  # A pure sine
 Sinusoidal parameters SinusoidP{Float64}:
   Frequency (Hz)      : 1.0
   DC                  : 0.0
-  Sine amplitude (Q)  : -0.0
-  Cosine amplitude (I): 1.0
+  Sine amplitude (Q)  : 1.0
+  Cosine amplitude (I): 0.0
 ```
 """
-function SinusoidP(f, DC, Q, I ; polar = false)
-    if polar
-        # argument Q is amplitude; I is phase
-        cosamp = Q*cos(I)
-        sinamp = -Q*sin(I)
-        return SinusoidP(promote(f, DC, sinamp, cosamp)...)
-    end
-    SinusoidP(promote(f, DC, Q, I)...)
-end
+SinusoidP(f, DC, Q, I) = SinusoidP(promote(f, DC, Q, I)...)
 
 """
     SinusoidP{T}(; f, DC, Q, I)

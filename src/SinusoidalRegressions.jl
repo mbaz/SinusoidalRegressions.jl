@@ -9,7 +9,8 @@ export sinfit_j, mixlinsinfit_j,
        ieee1057,
        rmse, mae,
        SinusoidalFunctionParameters,
-       SinusoidP, MixedLinearSinusoidP
+       SinusoidP, MixedLinearSinusoidP,
+       torect
 
 include("typedefs.jl")
 include("jacquelin_sr.jl")
@@ -45,6 +46,14 @@ function mae(fit::T, exact::T, x) where {T <: SinusoidalFunctionParameters}
     exactvalues = exact(x)
     return sum(abs.(fitvalues .- exactvalues))/length(x)
 end
+
+"""
+    torect(M, θ)
+
+Convert polar coordinates to rectangular coordinates `(y, x)` where ``x = M\\cos(θ)`` and
+``y = -M\\sin(θ)``
+"""
+torect(M, θ) = (-M*sin(θ), M*cos(θ))
 
 ## Precompilation
 @precompile_setup begin
