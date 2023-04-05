@@ -34,6 +34,24 @@ using Test
     @test I      ≈ -0.577491 atol = 0.01
 end
 
+@testset "Polar notation for SinusoidP" begin
+    s = SinusoidP(1, 0, 1, 0, polar = true) # A pure cosine
+    @test s.f == 1
+    @test s.DC == 0
+    @test s.Q ≈ 0
+    @test s.I ≈ 1
+    s = SinusoidP(1, 0, 1, -π/2, polar = true) # A pure sine
+    @test s.f == 1
+    @test s.DC == 0
+    @test s.Q ≈ 1 atol = 1e-12
+    @test s.I ≈ 0 atol = 1e-12
+    s = SinusoidP(1, 5, 1, -π/4, polar = true) # A mix
+    @test s.f == 1
+    @test s.DC == 5
+    @test s.Q ≈ sqrt(2)/2 atol = 1e-12
+    @test s.I ≈ sqrt(2)/2 atol = 1e-12
+end
+
 @testset "Easy sinusoidal regression tests" begin
     # Easy tests: lots of equidistant points, no noise.
     t = range(0, 1, length=100)
