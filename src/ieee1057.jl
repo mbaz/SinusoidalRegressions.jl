@@ -1,3 +1,4 @@
+
 """
     ieee1057(X, Y, f::Real) :: SinusoidP
 
@@ -9,14 +10,15 @@ The data is fit to the model ``f(x; DC, Q, I) = DC + Q\\sin(2πfx) + I\\cos(2πf
 
 See also [`SinusoidP`](@ref).
 """
-function ieee1057(X, Y, f)
+function ieee1057(p::Sin3Problem)
+    (; X, Y, f) = p
     if length(X) != length(Y)
-        error("Input vectors must be of equal length.")
+        error("Input vectors must be of equal length (got $(length(X)) and $(length(Y))).")
     end
     if f <= 0
         error("Frequency must be larger than 0.")
     end
-    return _ieee1057(X, Y, f)
+    return _ieee1057_3P(X, Y, f)
 end
 
 """
@@ -32,18 +34,19 @@ it is calculated using the integral equations method (see [`sinfit_j`](@ref)).
 Argument `iterations` specifies how many iterations to run. The default value is 6,
 which is the value recommended by the standard.
 """
-function ieee1057(X, Y ; f = nothing, iterations = 6)
+function ieee1057(p::Sin4Problem, a::IEEE1057)
+    (; X, Y, f) = p
     if length(X) != length(Y)
         error("Input vectors must be of equal length.")
     end
-    if !isnothing(f) && f < 0
+    if !ismissing(f) && f < 0
         error("Frequency estimate must be larger than 0.")
     end
-    return _ieee1057(X, Y ; f, iterations)
+    return _ieee1057_4P(X, Y, f, a.iterations)
 end
 
 # 3-parameter fit
-function _ieee1057(X, Y, f)
+function _ieee1057_3P(X, Y, f)
     M = length(X)
 
     D0 = hcat([1 for k in eachindex(X)],
@@ -56,15 +59,15 @@ function _ieee1057(X, Y, f)
 end
 
 # 4-parameter fit
-function _ieee1057(X, Y ; f = nothing, iterations = 6)
-    if isnothing(f)
+function _ieee1057_4P(X, Y, f, iterations)
+    if ismissing(f)
         # obtain a frequency estimate using Jacquelin's regression
-        sec1 = sinfit_j_part1(X, Y)
-        f = sinfit_j_part2(X, Y, sec1).f
+        sec1 = _jacquelin_part1(X, Y)
+        f = _jacquelin_part2(X, Y, sec1).f
     end
 
     # pre-fit using 3-parameter IEEE 1057 algorithm
-    (;DC, Q, I) = _ieee1057(X, Y, f)
+    (;DC, Q, I) = _ieee1057_3P(X, Y, f)
 
     # Pre-allocations
     D = zeros(eltype(X), length(X), 4)
@@ -93,18 +96,19 @@ Convergence is determined rather crudely, by observing whether the frequency cor
 Δf becomes smaller with each iteration. Argument `f` is an estimate of the sinusoidal's
 frequency; if not provided, it is calculated as in [`ieee1057`](@ref).
 """
-function ieee1057_testconvergence(X, Y ; f = nothing, iterations = 6)
-    if isnothing(f)
-        sec1 = sinfit_j_part1(X, Y)
-        f = sinfit_j_part2(X, Y, sec1).f
+function ieee1057_testconvergence(p::Sin4Problem, a::IEEE1057 = IEEE1057())
+    (; X, Y, f) = p
+    if ismissing(f)
+        sec1 = _jacquelin_part1(X, Y)
+        f = _jacquelin_part2(X, Y, sec1).f
     end
-    (;DC, Q, I) = _ieee1057(X, Y, f)
+    (;DC, Q, I) = _ieee1057_3P(X, Y, f)
 
     D = zeros(eltype(X), length(X), 4)
     D[:, 3] .= 1.0
     Δf = 0.0
 
-    for i = 1:iterations
+    for i = 1:a.iterations
         prev_Δf = Δf
         f += Δf
         D[:, 1] .= cos.(2π*f*X)

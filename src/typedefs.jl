@@ -1,3 +1,84 @@
+
+#
+# Algorithms
+#
+
+abstract type Algorithm end
+
+Base.@kwdef struct IEEE1057 <: Algorithm
+    iterations::Int = 6
+end
+
+struct IntegralEquations <: Algorithm end
+
+Base.@kwdef struct LevMar <: Algorithm
+    use_ga :: Bool = false
+end
+
+#
+# Problems
+#
+
+abstract type Problem end
+
+Base.@kwdef struct Sin3Problem{T1, T2, T3} <: Problem where
+                                              {T1 <: AbstractVector, T2 <: AbstractVector, T3 <: Real}
+    X  :: T1  # sampling times
+    Y  :: T2  # sample values
+    f  :: T3  # exact known frequency
+    DC = missing  # initial estimates (may be missing)
+    Q  = missing
+    I  = missing
+    lb = missing  # lower bounds
+    ub = missing  # upper bounds
+end
+
+Sin3Problem(X, Y, f ; kwargs...) = Sin3Problem(; X, Y, f, kwargs...)
+
+Base.@kwdef struct Sin4Problem{T1, T2} <: Problem where
+                                          {T1 <: AbstractVector, T2 <: AbstractVector}
+    X  :: T1  # sampling times
+    Y  :: T2  # sample values
+    f  = missing  # initial estimates (may be missing)
+    DC = missing
+    Q  = missing
+    I  = missing
+    lb = missing  # lower bounds
+    ub = missing  # uppper bounds
+end
+
+Sin4Problem(X, Y ; kwargs...) = Sin4Problem(; X, Y, kwargs...)
+
+Base.@kwdef struct MixedLinSin4Problem{T1, T2, T3} <: Problem where
+                                                      {T1 <: AbstractVector, T2 <: AbstractVector, T3 <: Real}
+    X :: T1
+    Y :: T2
+    f :: T3
+    DC = missing
+    Q  = missing
+    I  = missing
+    m  = missing
+    lb = missing
+    ub = missing
+end
+
+MixedLinSin4Problem(X, Y, f ; kwargs...) = MixedLinSin4Problem(; X, Y, f, kwargs...)
+
+Base.@kwdef struct MixedLinSin5Problem{T1, T2} <: Problem where
+                                                  {T1 <: AbstractVector, T2 <: AbstractVector, T3 <: Real}
+    X :: T1
+    Y :: T2
+    f = missing
+    DC = missing
+    Q  = missing
+    I  = missing
+    m  = missing
+    lb = missing
+    ub = missing
+end
+
+MixedLinSin5Problem(X, Y ; kwargs...) = MixedLinSin5Problem(; X, Y, kwargs...)
+
 """
     SinusoidalFunctionParameters
 

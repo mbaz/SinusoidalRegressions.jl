@@ -1,5 +1,5 @@
 """
-    sinfit_j(X, Y) :: SinusoidP
+    jacquelin(X, Y) :: SinusoidP
 
 Perform a four-parameter sinusoidal fit of the independent variables `X` and
 dependent variables `Y`, using the method of integral equations described in J.
@@ -12,27 +12,24 @@ I\\cos(2πfx)``. No initial guess as to the values of the parameters `f`, `DC`,
 
 See also [`SinusoidP`](@ref).
 """
-function sinfit_j(X, Y)
+function jacquelin(p::Sin4Problem)
+    (; X, Y) = p
+    n = length(X)
+    return _jacquelin_sin(X, Y)
+end
+
+function _jacquelin_sin(X, Y)
     # verify elements of X are ordered
     if !issorted(X)
         error("Please provide abscissa vector in ascending order.")
     end
 
-    n = length(X)
-
-    # first section
-    sec1 = sinfit_j_part1(X, Y)
-
-    # second section
-    sec2 = sinfit_j_part2(X, Y, sec1)
-
-    # third section
-    sec3 = sinfit_j_part3(X, Y, sec2)
-
-    return sec3
+    sec1 = _jacquelin_part1(X, Y)       # first section
+    sec2 = _jacquelin_part2(X, Y, sec1) # second section
+    sec3 = _jacquelin_part3(X, Y, sec2) # third section
 end
 
-function sinfit_j_part1(X, Y)
+function _jacquelin_part1(X, Y)
     n = length(X)
 
     S = zeros(eltype(X), n)
@@ -74,7 +71,7 @@ function sinfit_j_part1(X, Y)
     return SinusoidP(ω1/(2π), a1, b1, c1) 
 end
 
-function sinfit_j_part2(X, Y, sp)
+function _jacquelin_part2(X, Y, sp)
     n = length(X)
     ω1, a1, b1, c1 = 2π*sp.f, sp.DC, sp.Q, sp.I
 
@@ -121,7 +118,7 @@ function sinfit_j_part2(X, Y, sp)
     return SinusoidP(ω2/(2π), a2, b2, c2)
 end
 
-function sinfit_j_part3(X, Y, sp)
+function _jacquelin_part3(X, Y, sp)
     n = length(X)
     ω3 = 2π*sp.f
 

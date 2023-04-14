@@ -10,12 +10,17 @@ The values in `X` must be sorted in ascending order.
 
 See also [`sinfit_j`](@ref)
 """
-function mixlinsinfit_j(X, Y)
+function jacquelin(prob::MixedLinSin5Problem)
+    (; X, Y) = prob
     # verify elements of X are ordered
     if !issorted(X)
         error("Please provide abscissa vector in ascending order.")
     end
 
+    _jacquelin_mixlinsin(X, Y)
+end
+
+function _jacquelin_mixlinsin(X, Y)
     n = length(X)
 
     # "short way" -- actually, a first approximation
