@@ -271,6 +271,31 @@ end
     @test m  ≈ actual.m  atol = 0.015
 end
 
+@testset "Liang" begin
+    t = range(0, 1, length=100)
+    exact = SinusoidP(f = 0.5, DC = 1.2, Q = 0.3, I = 2.4)
+    Y = exact.(t)
+    p4 = Sin4Problem(t, Y)
+    a = Liang()
+
+    (; f, DC, Q, I) = sinfit(p4, a)
+    @test f  ≈ exact.f  atol = 0.001
+    @test DC ≈ exact.DC atol = 0.001
+    @test Q  ≈ exact.Q  atol = 0.001
+    @test I  ≈ exact.I  atol = 0.001
+
+    exact = SinusoidP(f = 0.2, DC = -1.2, Q = 0.0, I = 0.5)
+    Y = exact.(t)
+    p4 = Sin4Problem(t, Y)
+    a = Liang()
+
+    (; f, DC, Q, I) = sinfit(p4, a)
+    @test f  ≈ exact.f  atol = 0.001
+    @test DC ≈ exact.DC atol = 0.001
+    @test Q  ≈ exact.Q  atol = 0.001
+    @test I  ≈ exact.I  atol = 0.001
+end
+
 @testset "RMSE tests" begin
 
 end

@@ -16,7 +16,7 @@ export SinusoidalFunctionParameters,
 export Sin3Problem, Sin4Problem, MixedLinSin4Problem, MixedLinSin5Problem
 
 # export algorithms
-export IEEE1057, IntegralEquations, LevMar
+export IEEE1057, IntegralEquations, LevMar, Liang
 
 include("typedefs.jl")
 include("jacquelin_sr.jl")
@@ -25,6 +25,7 @@ include("jacquelin_gen.jl")
 include("jacquelin_damped.jl")
 include("ieee1057.jl")
 include("lsqfit.jl")
+include("liang.jl")
 include("plotrecipes.jl")
 
 function sinfit(p::Sin3Problem, ::IEEE1057)
@@ -57,6 +58,10 @@ end
 
 function sinfit(p::MixedLinSin5Problem, a::LevMar ; kwargs...)
     levmar(p, a ; kwargs...)
+end
+
+function sinfit(p::Sin4Problem, a::Liang)
+    liang(p, a)
 end
 
 """

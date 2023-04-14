@@ -15,6 +15,12 @@ Base.@kwdef struct LevMar <: Algorithm
     use_ga :: Bool = false
 end
 
+Base.@kwdef struct Liang <: Algorithm
+    threshold  :: Float64 = 0.15
+    iterations :: Int     = 100
+    q          :: Float64 = 1e-5
+end
+
 #
 # Problems
 #
