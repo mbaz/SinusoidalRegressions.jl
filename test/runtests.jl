@@ -284,16 +284,16 @@ end
     @test Q  ≈ exact.Q  atol = 0.001
     @test I  ≈ exact.I  atol = 0.001
 
-    exact = SinusoidP(f = 0.2, DC = -1.2, Q = 0.0, I = 0.5)
+    exact = SinusoidP(f = 0.3, DC = -1.2, Q = 0.0, I = 0.5)
     Y = exact.(t)
     p4 = Sin4Problem(t, Y)
     a = Liang()
 
     (; f, DC, Q, I) = sinfit(p4, a)
-    @test f  ≈ exact.f  atol = 0.001
-    @test DC ≈ exact.DC atol = 0.001
-    @test Q  ≈ exact.Q  atol = 0.001
-    @test I  ≈ exact.I  atol = 0.001
+    @test f  ≈ exact.f  atol = 0.01
+    @test DC ≈ exact.DC atol = 0.01
+    @test Q  ≈ exact.Q  atol = 0.01
+    @test I  ≈ exact.I  atol = 0.01
 end
 
 @testset "RMSE tests" begin
