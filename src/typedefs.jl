@@ -5,16 +5,55 @@
 
 abstract type Algorithm end
 
+"""
+    IEEE1057([iterations = 6]) <: Algorithm
+
+Define an instance of the IEEE 1057 sinusoidal fitting algorithm.
+
+Optional argument `iterations` specifies how many iterations to run before the algorithm
+stops. The default value is 6, which is the value recommended by the standard. This value
+is only used when calculating a 4-parameter fit.
+"""
 Base.@kwdef struct IEEE1057 <: Algorithm
     iterations::Int = 6
 end
 
+"""
+    IntegralEquations() <: Algorithm
+
+Define an instance of the integral-equations sinusoidal fitting algorithm described by
+J.  Jacquelin in "Régressions et équations intégrales", 2014 (available at
+https://fr.scribd.com/doc/14674814/Regressions-et-equations-integrales).
+
+This algorithm does not accept any configuration parameters.
+"""
 struct IntegralEquations <: Algorithm end
 
+"""
+    LevMar([use_ga = false]) <: Algorithm
+
+Define an instance of the Levenberg-Marquardt sinusoidal fitting algorithm.
+
+If the optional argument `use_ga` is set to `true`, the algorithm will use geodesic
+acceleration to potentially improve its performance and accuracy. See
+[`curve_fit`](https://github.com/JuliaNLSolvers/LsqFit.jl) for more details.
+"""
 Base.@kwdef struct LevMar <: Algorithm
     use_ga :: Bool = false
 end
 
+"""
+    Liang([threshold = 0.15, iterations = 100, q = 1e-5]) <: Algorithm
+
+Define an instance of the sinusoidal fitting algorithm described in Liang et al,
+"Fitting Algorithm of Sine Wave with Partial Period Waveforms and Non-Uniform Sampling
+Based on Least-Square Method." Journal of Physics: Conference Series 1149.1
+(2018)ProQuest. Web. 17 Apr. 2023.
+
+This algorithm is designed for scenarios where only a fraction of a period of the sinusoid
+has been sampled. Its optional parameters `threshold` and `q` are described in the paper.
+Additionally, a maximum number of iterations may be specified in `iterations`.
+"""
 Base.@kwdef struct Liang <: Algorithm
     threshold  :: Float64 = 0.15
     iterations :: Int     = 100
@@ -27,6 +66,21 @@ end
 
 abstract type Problem end
 
+"""
+    Sin3Problem(X, Y, f , [DC, Q, I, lb, ub]) <: Problem
+
+Define a three-parameter sinusoidal regression problem.
+
+The data is fit to the model ``f(x; DC, Q, I) = DC + Q\\sin(2πfx) + I\\cos(2πfx)``. The sampling
+instants are given by `X`, and the samples by `Y`. The frequency `f` (in Hz) is assumed to
+be known exactly.
+
+When using a fitting algorithm that accepts initial parameter estimates, these may be given
+by the optional keyword arguments `DC`, `Q` and `I` (default `missing`). Lower and upper bounds
+may be specified in `lb` and `ub`, which must be vectors of length 3.
+
+See also: [`Sin4Problem`](@ref)
+"""
 Base.@kwdef struct Sin3Problem{T1, T2, T3} <: Problem where
                                               {T1 <: AbstractVector, T2 <: AbstractVector, T3 <: Real}
     X  :: T1  # sampling times
@@ -41,6 +95,20 @@ end
 
 Sin3Problem(X, Y, f ; kwargs...) = Sin3Problem(; X, Y, f, kwargs...)
 
+"""
+    Sin4Problem(X, Y ; [f, DC, Q, I, lb, ub]) <: Problem
+
+Define a four-parameter sinusoidal regression problem.
+
+The data is fit to the model ``f(x; f, DC, Q, I) = DC + Q\\sin(2πfx) + I\\cos(2πfx)``.
+The sampling instants are given by `X`, and the samples by `Y`.
+
+When using a fitting algorithm that accepts initial parameter estimates, these may be given
+by the optional keyword arguments `f`, `DC`, `Q` and `I` (default `missing`). Lower and upper
+bounds may be specified in `lb` and `ub`, which must be vectors of length 4.
+
+See also: [`Sin3Problem`](@ref)
+"""
 Base.@kwdef struct Sin4Problem{T1, T2} <: Problem where
                                           {T1 <: AbstractVector, T2 <: AbstractVector}
     X  :: T1  # sampling times
@@ -55,6 +123,21 @@ end
 
 Sin4Problem(X, Y ; kwargs...) = Sin4Problem(; X, Y, kwargs...)
 
+"""
+    MixedLinSin4Problem(X, Y, f ; [DC, Q, I, m, lb, ub])
+
+Define a four-parameter mixed linear-sinusoidal regression problem.
+
+The data is fit to the model ``f(x; DC, Q, I, m) = DC + Q\\sin(2πfx) + I\\cos(2πfx) + mx``.
+The sampling instants are given by `X`, and the samples by `Y`. The frequency `f` (in Hz) is
+assumed to be known exactly.
+
+When using a fitting algorithm that accepts initial parameter estimates, these may be given
+by the optional keyword arguments `DC`, `Q` `I` and `m` (default `missing`). Lower and upper
+bounds may be specified in `lb` and `ub`, which must be vectors of length 4.
+
+See also: [`MixedLinSin5Problem`](@ref)
+"""
 Base.@kwdef struct MixedLinSin4Problem{T1, T2, T3} <: Problem where
                                                       {T1 <: AbstractVector, T2 <: AbstractVector, T3 <: Real}
     X :: T1
@@ -70,6 +153,20 @@ end
 
 MixedLinSin4Problem(X, Y, f ; kwargs...) = MixedLinSin4Problem(; X, Y, f, kwargs...)
 
+"""
+    MixedLinSin5Problem(X, Y ; [f, DC, Q, I, m, lb, ub])
+
+Define a five-parameter mixed linear-sinusoidal regression problem.
+
+The data is fit to the model ``f(x ; f, DC, Q, I, m) = DC + Q\\sin(2πfx) + I\\cos(2πfx) + mx``.
+The sampling instants are given by `X`, and the samples by `Y`.
+
+When using a fitting algorithm that accepts initial parameter estimates, these may be given
+by the optional keyword arguments `f`, `DC`, `Q` `I` and `m` (default `missing`). Lower and upper
+bounds may be specified in `lb` and `ub`, which must be vectors of length 5.
+
+See also: [`MixedLinSin4Problem`](@ref)
+"""
 Base.@kwdef struct MixedLinSin5Problem{T1, T2} <: Problem where
                                                   {T1 <: AbstractVector, T2 <: AbstractVector, T3 <: Real}
     X :: T1

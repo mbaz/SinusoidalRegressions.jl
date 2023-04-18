@@ -1,15 +1,4 @@
-"""
-    mixlinsinfit_j(X, Y) :: MixedLinearSinusoidP
 
-Perform a mixed linear-sinusoidal fit of the independent variables `X` and dependent
-variables `Y`, using the method of integral equations.
-
-The data is fit to the model ``s(x; f, DC, Q, I, m) = DC + mx + Q\\sin(2πfx) + I\\sin(2πfx)``.
-No initial guess as to the values of the parameters `f`, `DC`, `Q`, `I`, or `m` is required.
-The values in `X` must be sorted in ascending order.
-
-See also [`sinfit_j`](@ref)
-"""
 function jacquelin(prob::MixedLinSin5Problem)
     (; X, Y) = prob
     # verify elements of X are ordered
