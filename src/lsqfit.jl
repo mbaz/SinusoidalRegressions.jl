@@ -1,22 +1,4 @@
-"""
-    sinfit(X, Y, f ; kwargs...)
 
-Perform a three-parameter least-squares sinusoidal fit of the independent variables
-`X` and dependent variables `Y`, assuming a known frequency `f`, using the non-linear
-optimization solver from `LsqFit.jl`.
-
-The data is fit to the model ``s(x; DC, Q, I) = DC + Q\\sin(2πfx) + I\\cos(2πfx)``. The
-values in `X` must be sorted in ascending order.
-
-The Levenberg-Marquardt algorithm used by `LsqFit.jl` requires an initial guess
-of all three parameters, `DC`, `Q` and `I`. If no initial guess is provided, then one is
-calculated using the linear regression algorithm from IEEE 1057 (see [`ieee1057`](@ref)).
-
-All keyword arguments provided are directly passed to `LsqFit.curve_fit`.
-
-See also [`SinusoidP`](@ref), [`ieee1057`](@ref),
-[`curve_fit`](https://github.com/JuliaNLSolvers/LsqFit.jl).
-"""
 function levmar(prob::Sin3Problem, a::LevMar ; kwargs...)
     (; X, Y, f, DC, Q, I, lb, ub) = prob
     # Check if all parameters are given initial estimates
@@ -50,26 +32,6 @@ function levmar(prob::Sin3Problem, a::LevMar ; kwargs...)
     return SinusoidP(f, coef(fit)...)
 end
 
-"""
-    sinfit(X, Y, guess::SinusoidP = sinfit_j(X, Y) ; kwargs...)
-
-Perform a four-parameter least-squares sinusoidal fit of the independent variables
-`X` and dependent variables `Y`, using the non-linear optimization solver from
-`LsqFit.jl`.
-
-The data is fit to the model ``s(x; f, DC, Q, I) = DC + Q\\sin(2πfx) + I\\cos(2πfx)``. The
-values in `X` must be sorted in ascending order.
-
-The Levenberg-Marquardt algorithm used by `LsqFit.jl` requires an initial guess
-of all four model parameters. If no initial guess is provided, then one is calculated
-using [`sinfit_j`](@ref).
-
-All keyword arguments provided are directly passed to `LsqFit.curve_fit`.
-
-See also [`SinusoidP`](@ref), [`sinfit_j`](@ref),
-[LsqFit.jl](https://github.com/JuliaNLSolvers/LsqFit.jl),
-[`curve_fit`](https://github.com/JuliaNLSolvers/LsqFit.jl)
-"""
 function levmar(prob::Sin4Problem, a::LevMar ; kwargs...)
     (; X, Y, f, DC, Q, I, lb, ub) = prob
     # Check if all parameters are given initial estimates
@@ -104,24 +66,6 @@ function levmar(prob::Sin4Problem, a::LevMar ; kwargs...)
     return SinusoidP(coef(fit)...)
 end
 
-"""
-    mixlinsinfit(X, Y, guess::MixedLinearSinusoidP = mixlinsinfit_j(X, Y) ; kwargs...)
-
-Perform a least-squares mixed linear-sinusoid fit of the independent variables `X` and dependent
-variables `Y`,  using the non-linear optimization solver from `LsqFit.jl`.
-
-The data is fit to the model ``s(x, f, DC, Q, I, m) = DC + Q\\sin(2πfx) + I\\cos(2πfx) + mx``. The
-values in `X` must be sorted in axcending order.
-
-The Levenberg-Marquardt algorithm used by `LsqFit.jl` requires an initial guess
-of the parameters, `DC`, `Q` `I`, and `m`. If no initial guess is provided, then one is
-calculated then one is calculated using [`mixlinsinfit_j`](@ref).
-
-All keyword arguments provided are directly passed to `LsqFit.curve_fit`.
-
-See also [`MixedLinearSinusoidP`](@ref), [`mixlinsinfit_j`](@ref),
-[`curve_fit`](https://github.com/JuliaNLSolvers/LsqFit.jl).
-"""
 function levmar(prob::MixedLinSin4Problem, a::LevMar ; kwargs...)
     (; X, Y, f, DC, Q, I, m, lb, ub) = prob
     # Check if all parameters are given initial estimates

@@ -1,17 +1,4 @@
-"""
-    jacquelin(X, Y) :: SinusoidP
 
-Perform a four-parameter sinusoidal fit of the independent variables `X` and
-dependent variables `Y`, using the method of integral equations described in J.
-Jacquelin, "Régressions et équations intégrales", 2014 (available at
-https://fr.scribd.com/doc/14674814/Regressions-et-equations-integrales)
-
-The data is fit to the model ``s(x; f, DC, Q, I) = DC + Q\\sin(2πfx) +
-I\\cos(2πfx)``. No initial guess as to the values of the parameters `f`, `DC`,
-`Q`, or `I` is required. The values in `X` must be sorted in ascending order.
-
-See also [`SinusoidP`](@ref).
-"""
 function jacquelin(p::Sin4Problem)
     (; X, Y) = p
     n = length(X)

@@ -1,15 +1,4 @@
 
-"""
-    ieee1057(X, Y, f::Real) :: SinusoidP
-
-Calculate a three-parameter sinusoidal fit of the independent variables `X` and dependent
-variables `Y`, using the algorithm described by the IEEE 1057 Standard. Argument `f`
-is the exact frequency of the sinusoid, in hertz.
-
-The data is fit to the model ``f(x; DC, Q, I) = DC + Q\\sin(2πfx) + I\\cos(2πfx)``.
-
-See also [`SinusoidP`](@ref).
-"""
 function ieee1057(p::Sin3Problem)
     (; X, Y, f) = p
     if length(X) != length(Y)
@@ -21,19 +10,6 @@ function ieee1057(p::Sin3Problem)
     return _ieee1057_3P(X, Y, f)
 end
 
-"""
-    ieee1057(X, Y ; f = nothing, iterations = 6) :: SinusoidP
-
-Calculate a four-parameter sinusoidal fit of the independent variables `X` and
-dependent variables `Y`, using the algorithm described by the IEEE 1057
-Standard.
-
-Argument `f` is an estimate of the frequency, in hertz. If not provided, then
-it is calculated using the integral equations method (see [`sinfit_j`](@ref)).
-
-Argument `iterations` specifies how many iterations to run. The default value is 6,
-which is the value recommended by the standard.
-"""
 function ieee1057(p::Sin4Problem, a::IEEE1057)
     (; X, Y, f) = p
     if length(X) != length(Y)

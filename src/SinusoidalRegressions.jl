@@ -28,6 +28,43 @@ include("lsqfit.jl")
 include("liang.jl")
 include("plotrecipes.jl")
 
+"""
+    sinfit(problem::Problem, algorithm::Algorithm)
+
+Calculate a sinosoidal regression on `problem` using `algorithm`.
+
+Currently supported problem types are:
+* `Sin3Problem` -- three-parameter sinusoidal regression
+* `Sin4Problem` -- four-parameter sinusoidal regression
+* `MixedLinSin4Problem` -- four-parameter mixed linear and sinusoidal regression
+* `MixedLinSin5Problem` -- five-parameter mixed linear and sinusoidal regression
+
+Currently supported algorithms are:
+* `IEEE1057`
+* `IntegralEquations`
+* `LevMar`
+* `Liang`
+
+Example
+=======
+
+```
+julia> using SinusoidalRegressions
+julia> t = range(0, 1, length = 100)                  # time instants
+julia> s = sin.(2*pi*15*t .+ pi/4) .+ 0.1*randn(100)  # noisy samples
+julia> p = Sin3Problem(t, s, 15)                      # define regression problem
+julia> sinfit(p, IEEE1057())                          # calculate fit with IEEE 1057
+Sinusoidal parameters SinusoidP{Float64}:
+  Frequency (Hz)      : 15.0
+  DC                  : -0.01067218324878172
+  Sine amplitude (Q)  : 0.7299806464221965
+  Cosine amplitude (I): 0.6822068658523716
+```
+
+See the documentation for more details.
+"""
+sinfit(p::Problem, a::Algorithm) = sinfit(p, a)
+
 function sinfit(p::Sin3Problem, ::IEEE1057)
     ieee1057(p)
 end
