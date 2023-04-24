@@ -2,7 +2,7 @@ module SinusoidalRegressions
 
 using LsqFit
 using RecipesBase
-using SnoopPrecompile
+using PrecompileTools
 using Zygote
 using LinearAlgebra
 
@@ -111,12 +111,12 @@ Convert polar coordinates to rectangular coordinates `(y, x)` where ``x = M\\cos
 torect(M, θ) = (-M*sin(θ), M*cos(θ))
 #=
 ## Precompilation
-@precompile_setup begin
+@setup_workload begin
     x = [-1.983, -1.948, -1.837, -1.827, -1.663, -0.815, -0.778, -0.754, -0.518,  0.322,  0.418,  0.781,
           0.931,  1.510,  1.607]
     y = [ 0.936,  0.810,  0.716,  0.906,  0.247, -1.513, -1.901, -1.565, -1.896,  0.051,  0.021,  1.069,
           0.862,  0.183,  0.311] 
-    @precompile_all_calls begin
+    @compile_workload begin
         t2 = ieee1057(x, y)
         t1 = ieee1057(x, y, 1.5)
         t3 = sinfit_j(x, y)
