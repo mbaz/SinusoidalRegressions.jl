@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/mbaz/SinusoidalRegressions.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/mbaz/SinusoidalRegressions.jl/actions/workflows/ci.yml)
 
+[![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
+
 SinusoidalRegressions.jl aims to provide a set of functions for conveniently fitting noisy data to a variety of sinusoidal models, with or without initial estimates of the parameters. The package is quite usable in its current state, but is still in development. Support for more sinusoidal models will be added in the future, and API changes cannot be ruled out.
 
 Its documentation is found [here](https://mbaz.github.io/SinusoidalRegressions.jl/stable/).

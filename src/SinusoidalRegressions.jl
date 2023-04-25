@@ -2,7 +2,7 @@ module SinusoidalRegressions
 
 using LsqFit
 using RecipesBase
-using SnoopPrecompile
+using PrecompileTools
 using Zygote
 using LinearAlgebra
 
@@ -63,7 +63,7 @@ Sinusoidal parameters SinusoidP{Float64}:
 
 See the documentation for more details.
 """
-sinfit(p::Problem, a::Algorithm) = sinfit(p, a)
+sinfit(p::Problem, a::Algorithm) = "Not implemented."
 
 function sinfit(p::Sin3Problem, ::IEEE1057)
     ieee1057(p)
@@ -146,21 +146,30 @@ Convert polar coordinates to rectangular coordinates `(y, x)` where ``x = M\\cos
 ``y = -M\\sin(θ)``
 """
 torect(M, θ) = (-M*sin(θ), M*cos(θ))
-#=
+
 ## Precompilation
-@precompile_setup begin
+@setup_workload begin
     x = [-1.983, -1.948, -1.837, -1.827, -1.663, -0.815, -0.778, -0.754, -0.518,  0.322,  0.418,  0.781,
           0.931,  1.510,  1.607]
     y = [ 0.936,  0.810,  0.716,  0.906,  0.247, -1.513, -1.901, -1.565, -1.896,  0.051,  0.021,  1.069,
-          0.862,  0.183,  0.311] 
-    @precompile_all_calls begin
-        t2 = ieee1057(x, y)
-        t1 = ieee1057(x, y, 1.5)
-        t3 = sinfit_j(x, y)
-        t4 = sinfit(x, y, initialguess = t3)
-        t5 = mixlinsinfit_j(x, y)
-        t6 = mixlinsinfit(x, y, t5)
+          0.862,  0.183,  0.311]
+    @compile_workload begin
+        p1 = Sin3Problem(x, y, 1.5)
+        t2 = sinfit(p1, IEEE1057())
+        t3 = sinfit(p1, LevMar())
+
+        p2 = Sin4Problem(x, y, f = 1.5)
+        t4 = sinfit(p2, IEEE1057())
+        t5 = sinfit(p2, IntegralEquations())
+        t6 = sinfit(p2, LevMar())
+        t7 = sinfit(p2, Liang())
+
+        p3 = MixedLinSin4Problem(x, y, 1.5)
+        t8 = sinfit(p3, LevMar())
+
+        p4 = MixedLinSin5Problem(x, y)
+        t9 = sinfit(p3, IntegralEquations())
     end
 end
-=#
+
 end  # module
