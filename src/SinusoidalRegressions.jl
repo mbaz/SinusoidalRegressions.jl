@@ -146,7 +146,7 @@ Convert polar coordinates to rectangular coordinates `(y, x)` where ``x = M\\cos
 ``y = -M\\sin(θ)``
 """
 torect(M, θ) = (-M*sin(θ), M*cos(θ))
-#=
+
 ## Precompilation
 @setup_workload begin
     x = [-1.983, -1.948, -1.837, -1.827, -1.663, -0.815, -0.778, -0.754, -0.518,  0.322,  0.418,  0.781,
@@ -162,5 +162,5 @@ torect(M, θ) = (-M*sin(θ), M*cos(θ))
         t6 = mixlinsinfit(x, y, t5)
     end
 end
-=#
+
 end  # module
