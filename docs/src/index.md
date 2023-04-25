@@ -31,14 +31,14 @@ This package supports five sinusoidal models:
 !!! note "A note on the frequency"
     The frequency ``f`` is assumed to be expressed in hertz throughout.
 
-Three types of sinusoidal fitting algorithms are provided:
+Four types of sinusoidal fitting algorithms are provided:
 
-  * IEEE 1057 3-parameter and 4-parameter algorithms. These are able to fit only the sinusoidal model
+  * IEEE 1057 3-parameter and 4-parameter algorithms[^1]. These are able to fit only the sinusoidal model
     ``s_s(x)``. The 4-parameter version requires a very close estimate of the frequency ``f`` and
     dense sampling of several periods of the sinusoid.
 
   * The algorithms proposed by J. Jacquelin, based on the idea of finding an integral
-    equation whose solution is the desired sinusoidal model. This integral equation is linear
+    equation whose solution is the desired sinusoidal model[^2]. This integral equation is linear
     and can be solved using linear least-squares. These algorithms have several benefits:
 
       * They are non-iterative.
@@ -48,10 +48,30 @@ Three types of sinusoidal fitting algorithms are provided:
 
   * The non-linear fitting function `curve_fit` from the package
     [`LsqFit`](https://github.com/JuliaNLSolvers/LsqFit.jl). This function uses the Levenberg-Marquardt
-    algorithm and is quite powerful, but it requires an initial estimate of the parameters. This
-    package "wraps" `curve_fit`, automatically defining the correct model and calculating initial
-    parameter estimates (using IEEE 1057 or Jacquelin's algorithms, as appropriate) if none are
-    provided by the user.
+    algorithm[^3][^4][^5] and is quite powerful, but it requires an initial estimate of the parameters.
+    SinusoidalRegressions package "wraps" `curve_fit`, automatically defining the correct model
+    and calculating initial parameter estimates (using IEEE 1057 or Jacquelin's algorithms, as
+    appropriate) if none are provided by the user.
+
+   * The algorithm proposed by Liang et al[^6], designed for the case where only a fraction of a period
+     of a sinusoid is sampled.
+
+[^1]: IEEE, "IEEE Standard for Digitizing Waveform Recorders", 2018.
+
+[^2]:Jacquelin J., Régressions et Equations Intégrales, 2014, (online)
+https://fr.scribd.com/doc/14674814/Regressions-et-equations-integrales.
+
+[^3]: Levenberg, K., "A Method for the Solution of Certain Non-Linear Problems in Least Squares",
+Quarterly of Applied Mathematics, 2 (2), 1944. doi:10.1090/qam/10666.
+
+[^4]: Marquardt, D., "An Algorithm for Least-Squares Estimation of Nonlinear Parameters",
+SIAM Journal on Applied Mathematics, 11 (2), 1944. doi:10.1137/0111030.
+
+[^5] `LsqFit.jl` User Manual, (online) https://julianlsolvers.github.io/LsqFit.jl/latest/
+
+[^6]: Liang et al, "Fitting Algorithm of Sine Wave with Partial Period Waveforms and
+Non-Uniform Sampling Based on Least-Square Method." Journal of Physics:
+Conference Series 1149.1 (2018)ProQuest. Web. 17 Apr. 2023.
 
 ## Installation
 
@@ -78,16 +98,30 @@ discussion on the [Julia forums](https://discourse.julialang.org/).
 
 ### Fitting experimental data
 
-Let us fit noisy data to a mixed linear-sinusoidal model using Jacquelin's
+Fitting data using this package requires three steps:
+
+1. Define a `Problem`. The problem encapsulates all known data: the sampling points and
+   data at a minimum, and possibly also the frequency. Initial estimates and bounds are
+   also part of the problem definition
+2. Specify and optionally configure an `Algorithm`.
+3. Run the `sinfit` function on the problem with the chosen algorithm. This function
+   returns a `SinusoidalFunctionParameters` with the fitted parameters.
+
+After the data is fit, it may be easily plotted, and its RMSE and MAE may be calculated.
+
+As a first exmaple, let us fit noisy data to a mixed linear-sinusoidal model using Jacquelin's
 integral equation algorithm. The model is
 
-``s(x) = \textrm{DC} + mx + Q\sin(2πfx) + I\cos(2πfx)``
+``s(x ; f, \textrm{DC}, Q, I, m) = \textrm{DC} + mx + Q\sin(2πfx) + I\cos(2πfx)``
 
 with parameters ``f`` (the frequency is unknown), ``\textrm{DC}``, ``Q``, ``I`` and ``m``.
 
-#### Types
+Our tasks are: define an "exact" model and generate noisy samples from it, fit the noisy samples,
+determine the error, and plot the fit. First we need to learn about defining a model.
 
-This package includes several types used to store the parameters of the different models:
+#### Model types
+
+This package includes several types used to store the parameters of the different supported models:
 * [`SinusoidP`](@ref) for representing sinusoidal models ``s_s(x)``.
 * [`MixedLinearSinusoidP`](@ref) for representing mixed sinusoidal models ``s_{mls}(x)``.
 * [`SinusoidalRegressions.GenSinusoidP`](@ref) for representing general sinusoidal models ``s_g(x)`` (not yet implemented).
@@ -100,10 +134,10 @@ use both of these features below.
 
 Since we're assuming a mixed linear-sinusoidal model, we'll use the type `MixedLinearSinusoidP`.
 
-#### Generating the data
+#### Generating the "exact" data
 
-We will first generate the "true" or exact data, and then add noise. As a
-second step, we'll fit the noisy data and compare the fit to the exact model.
+We will first generate the "exact" or "true" data, and then add noise. Then, we'll fit the noisy
+data and compare the fit to the exact model.
 
 The exact parameters are ``f = 4.1``, ``\textrm{DC} = 0.2``, ``m = 1``, ``Q =
 -0.75``, and ``I = 0.8``. We define the model as follows:
@@ -125,6 +159,10 @@ seed!(6778899)
 data = d_exact .+ 0.2*randn(40)  # noisy data
 nothing # hide
 ```
+
+#### Defining the problem
+
+
 
 #### Fitting and error measurement
 
@@ -207,15 +245,3 @@ plot(x, data, fit_nls, exact = p_exact)
 
 ## References
 
-Jacquelin J., Régressions et Equations Intégrales, 2014, (online)
-https://fr.scribd.com/doc/14674814/Regressions-et-equations-integrales.
-
-IEEE, "IEEE Standard for Digitizing Waveform Recorders", 2018.
-
-Levenberg, K., "A Method for the Solution of Certain Non-Linear Problems in Least Squares",
-Quarterly of Applied Mathematics, 2 (2), 1944. doi:10.1090/qam/10666.
-
-Marquardt, D., "An Algorithm for Least-Squares Estimation of Nonlinear Parameters",
-SIAM Journal on Applied Mathematics, 11 (2), 1944. doi:10.1137/0111030.
-
-`LsqFit.jl` User Manual, (online) https://julianlsolvers.github.io/LsqFit.jl/latest/
