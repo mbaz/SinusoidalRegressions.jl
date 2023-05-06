@@ -3,6 +3,12 @@
 # Algorithms
 #
 
+"""
+    Algorithm
+
+Supported algorithm types are subtypes of the abstract type `Algorithm`.
+Supertype for the different supported algorithms.
+"""
 abstract type Algorithm end
 
 """
@@ -64,7 +70,14 @@ end
 # Problems
 #
 
+"""
+    Problem
+
+Supertype for the different kinds of sinusoidal regression problems.
+"""
 abstract type Problem end
+
+const MR = Union{Missing, Real}
 
 """
     Sin3Problem(X, Y, f , [DC, Q, I, lb, ub]) <: Problem
@@ -81,16 +94,16 @@ may be specified in `lb` and `ub`, which must be vectors of length 3.
 
 See also: [`Sin4Problem`](@ref)
 """
-Base.@kwdef struct Sin3Problem{T1, T2, T3} <: Problem where
-                                              {T1 <: AbstractVector, T2 <: AbstractVector, T3 <: Real}
+Base.@kwdef struct Sin3Problem{T1, T2, F<:Real, P1<:MR, P2<:MR, P3<:MR, LB, UB} <: Problem
     X  :: T1  # sampling times
     Y  :: T2  # sample values
-    f  :: T3  # exact known frequency
-    DC = missing  # initial estimates (may be missing)
-    Q  = missing
-    I  = missing
-    lb = missing  # lower bounds
-    ub = missing  # upper bounds
+    f  :: F  # exact known frequency
+    # initial estimates (may be missing)
+    DC :: P1 = missing
+    Q  :: P2 = missing
+    I  :: P3 = missing
+    lb :: LB = missing  # lower bounds
+    ub :: UB = missing  # upper bounds
 end
 
 Sin3Problem(X, Y, f ; kwargs...) = Sin3Problem(; X, Y, f, kwargs...)
@@ -109,16 +122,15 @@ bounds may be specified in `lb` and `ub`, which must be vectors of length 4.
 
 See also: [`Sin3Problem`](@ref)
 """
-Base.@kwdef struct Sin4Problem{T1, T2} <: Problem where
-                                          {T1 <: AbstractVector, T2 <: AbstractVector}
+Base.@kwdef struct Sin4Problem{T1, T2, P1<:MR, P2<:MR, P3<:MR, P4<:MR, LB, UB} <: Problem
     X  :: T1  # sampling times
     Y  :: T2  # sample values
-    f  = missing  # initial estimates (may be missing)
-    DC = missing
-    Q  = missing
-    I  = missing
-    lb = missing  # lower bounds
-    ub = missing  # uppper bounds
+    f  :: P1 = missing  # initial estimates (may be missing)
+    DC :: P2 = missing
+    Q  :: P3 = missing
+    I  :: P4 = missing
+    lb :: LB = missing  # lower bounds
+    ub :: UB = missing  # uppper bounds
 end
 
 Sin4Problem(X, Y ; kwargs...) = Sin4Problem(; X, Y, kwargs...)
@@ -138,17 +150,16 @@ bounds may be specified in `lb` and `ub`, which must be vectors of length 4.
 
 See also: [`MixedLinSin5Problem`](@ref)
 """
-Base.@kwdef struct MixedLinSin4Problem{T1, T2, T3} <: Problem where
-                                                      {T1 <: AbstractVector, T2 <: AbstractVector, T3 <: Real}
+Base.@kwdef struct MixedLinSin4Problem{T1, T2, F<:Real, P1<:MR, P2<:MR, P3<:MR, P4<:MR, LB, UB}
     X :: T1
     Y :: T2
-    f :: T3
-    DC = missing
-    Q  = missing
-    I  = missing
-    m  = missing
-    lb = missing
-    ub = missing
+    f :: F
+    DC :: P1= missing
+    Q  :: P2 = missing
+    I  :: P3 = missing
+    m  :: P4 = missing
+    lb :: LB = missing
+    ub :: UB = missing
 end
 
 MixedLinSin4Problem(X, Y, f ; kwargs...) = MixedLinSin4Problem(; X, Y, f, kwargs...)
@@ -167,17 +178,16 @@ bounds may be specified in `lb` and `ub`, which must be vectors of length 5.
 
 See also: [`MixedLinSin4Problem`](@ref)
 """
-Base.@kwdef struct MixedLinSin5Problem{T1, T2} <: Problem where
-                                                  {T1 <: AbstractVector, T2 <: AbstractVector, T3 <: Real}
+Base.@kwdef struct MixedLinSin5Problem{T1, T2, P1<:MR, P2<:MR, P3<:MR, P4<:MR, P5<:MR, LB, UB}
     X :: T1
     Y :: T2
-    f = missing
-    DC = missing
-    Q  = missing
-    I  = missing
-    m  = missing
-    lb = missing
-    ub = missing
+    f  :: P1  = missing
+    DC :: P2 = missing
+    Q  :: P3 = missing
+    I  :: P4 = missing
+    m  :: P5 = missing
+    lb :: LB = missing
+    ub :: UB = missing
 end
 
 MixedLinSin5Problem(X, Y ; kwargs...) = MixedLinSin5Problem(; X, Y, kwargs...)

@@ -1,6 +1,6 @@
 module SinusoidalRegressions
 
-using LsqFit
+using LsqFit: curve_fit, coef
 using RecipesBase
 using PrecompileTools
 using Zygote
@@ -9,8 +9,7 @@ using LinearAlgebra
 export rmse, mae, torect, sinfit
 
 # export regression types
-export SinusoidalFunctionParameters,
-       SinusoidP, MixedLinearSinusoidP
+export SinusoidP, MixedLinearSinusoidP
 
 # export problems
 export Sin3Problem, Sin4Problem, MixedLinSin4Problem, MixedLinSin5Problem
@@ -69,6 +68,10 @@ function sinfit(p::Sin3Problem, ::IEEE1057)
     ieee1057(p)
 end
 
+function sinfit(p::Sin3Problem, a::LevMar ; kwargs...)
+    levmar(p, a ; kwargs...)
+end
+
 function sinfit(p::Sin4Problem, a::IEEE1057)
     ieee1057(p, a)
 end
@@ -77,11 +80,15 @@ function sinfit(p::Sin4Problem, ::IntegralEquations)
     jacquelin(p)
 end
 
-function sinfit(p::Sin3Problem, a::LevMar ; kwargs...)
+function sinfit(p::Sin4Problem, a::LevMar ; kwargs...)
     levmar(p, a ; kwargs...)
 end
 
-function sinfit(p::Sin4Problem, a::LevMar ; kwargs...)
+function sinfit(p::Sin4Problem, a::Liang)
+    liang(p, a)
+end
+
+function sinfit(p::MixedLinSin4Problem, a::LevMar ; kwargs...)
     levmar(p, a ; kwargs...)
 end
 
@@ -89,16 +96,8 @@ function sinfit(p::MixedLinSin5Problem, ::IntegralEquations)
     jacquelin(p)
 end
 
-function sinfit(p::MixedLinSin4Problem, a::LevMar ; kwargs...)
-    levmar(p, a ; kwargs...)
-end
-
 function sinfit(p::MixedLinSin5Problem, a::LevMar ; kwargs...)
     levmar(p, a ; kwargs...)
-end
-
-function sinfit(p::Sin4Problem, a::Liang)
-    liang(p, a)
 end
 
 """
@@ -168,7 +167,7 @@ torect(M, θ) = (-M*sin(θ), M*cos(θ))
         t8 = sinfit(p3, LevMar())
 
         p4 = MixedLinSin5Problem(x, y)
-        t9 = sinfit(p3, IntegralEquations())
+        t9 = sinfit(p4, IntegralEquations())
     end
 end
 
