@@ -1,7 +1,7 @@
 name = "SinusoidalRegressions"
 uuid = "48dee9f3-50d2-49a3-a3c9-e990db172bec"
 authors = ["Miguel Bazdresch <miguelb@2pif.info> and contributors"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
