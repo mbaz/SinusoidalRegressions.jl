@@ -6,7 +6,7 @@
 
 SinusoidalRegressions.jl aims to provide a set of functions for conveniently fitting noisy data to a variety of sinusoidal models, with or without initial estimates of the parameters. The package is quite usable in its current state, but is still in development. Support for more sinusoidal models will be added in the future, and API changes cannot be ruled out.
 
-Its documentation is found [here](https://mbaz.github.io/SinusoidalRegressions.jl/stable/).
+Its documentation is found [here](https://mbaz.github.io/SinusoidalRegressions.jl/v0.2/).
 
 ### Package features:
 
