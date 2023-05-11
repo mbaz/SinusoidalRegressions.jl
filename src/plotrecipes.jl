@@ -1,13 +1,13 @@
 # plot recipes
 
 "Plot a regression"
-@recipe function f(t, p::T ; fitlabel = "") where {T <: SinusoidalFunctionParameters}
+@recipe function f(t, p::T ; fitlabel = "") where {T <: SRModel}
     xguide --> "x"
     yguide --> "y"
     ttl = ""
-    if p isa SinusoidP
+    if p isa SinModel
         ttl = "Sinusoidal Curve"
-    elseif fit isa MixedLinearSinusoidP
+    elseif fit isa MixedLinSinModel
         ttl = "Mixed Linear-Sinusoid Fit"
     end
     plot_title --> ttl
@@ -23,13 +23,13 @@ end
                    samples    = 100,
                    fitlabel   = "fit",
                    datalabel  = "data",
-                   exactlabel = "exact") where {T <: SinusoidalFunctionParameters}
+                   exactlabel = "exact") where {T <: SRModel}
     xguide --> "x"
     yguide --> "y"
     ttl = ""
-    if fit isa SinusoidP
+    if fit isa SinModel
         ttl = "Sinusoidal Curve Fit"
-    elseif fit isa MixedLinearSinusoidP
+    elseif fit isa MixedLinSinModel
         ttl = "Mixed Linear-Sinusoid Fit"
     end
     plot_title --> ttl

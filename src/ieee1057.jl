@@ -31,7 +31,7 @@ function _ieee1057_3P(X, Y, f)
 
     (DC, Q, I) = D0 \ Y
 
-    return SinusoidP(f, DC, Q, I)
+    return SinModel(f, DC, Q, I)
 end
 
 # 4-parameter fit
@@ -61,7 +61,7 @@ function _ieee1057_4P(X, Y, f, iterations)
     end
     f += Δf
 
-    return SinusoidP(f, DC, Q, I)
+    return SinModel(f, DC, Q, I)
 end
 
 """

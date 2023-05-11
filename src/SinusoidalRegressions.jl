@@ -6,15 +6,19 @@ using PrecompileTools
 using Zygote
 using LinearAlgebra
 
+# abstract types
+export SRAlgorithm, SRModel, SRProblem
+
+# main functions
 export rmse, mae, torect, sinfit
 
-# export regression types
-export SinusoidP, MixedLinearSinusoidP
+# regression models
+export SinModel, MixedLinSinModel
 
-# export problems
+# problems
 export Sin3Problem, Sin4Problem, MixedLinSin4Problem, MixedLinSin5Problem
 
-# export algorithms
+# algorithms
 export IEEE1057, IntegralEquations, LevMar, Liang
 
 include("typedefs.jl")
@@ -53,7 +57,7 @@ julia> t = range(0, 1, length = 100)                  # time instants
 julia> s = sin.(2*pi*15*t .+ pi/4) .+ 0.1*randn(100)  # noisy samples
 julia> p = Sin3Problem(t, s, 15)                      # define regression problem
 julia> sinfit(p, IEEE1057())                          # calculate fit with IEEE 1057
-Sinusoidal parameters SinusoidP{Float64}:
+Sinusoidal parameters SinModel{Float64}:
   Frequency (Hz)      : 15.0
   DC                  : -0.01067218324878172
   Sine amplitude (Q)  : 0.7299806464221965
@@ -62,7 +66,7 @@ Sinusoidal parameters SinusoidP{Float64}:
 
 See the documentation for more details.
 """
-sinfit(p::Problem, a::Algorithm) = "Not implemented."
+sinfit(p::SRProblem, a::SRAlgorithm) = throw("Not implemented.")
 
 function sinfit(p::Sin3Problem, ::IEEE1057)
     ieee1057(p)
@@ -101,38 +105,38 @@ function sinfit(p::MixedLinSin5Problem, a::LevMar ; kwargs...)
 end
 
 """
-    rmse(fit::T, exact::T, x) where {T <: SinusoidalFunctionParameters}
+    rmse(fit::T, exact::T, x) where {T <: SRModel}
 
 Calculate the root mean-square error between `fit` and `exact` sampled at collection `x`.
 
 See also: [`mae`](@ref)
 """
-function rmse(fit::T, exact::T, x) where {T <: SinusoidalFunctionParameters}
+function rmse(fit::T, exact::T, x) where {T <: SRModel}
     fitvalues = fit(x)
     exactvalues = exact(x)
     return sqrt(sum((fitvalues .- exactvalues).^2) / length(x))
 end
 
 """
-    rmse(fit::T, samples, x) where {T <: SinusoidalFunctionParameters}
+    rmse(fit::T, samples, x) where {T <: SRModel}
 
 Calculate the root mean-square error between `fit` and the `samples` taken at `x`.
 
 See also: [`mae`](@ref)
 """
-function rmse(fit::T, samples::AbstractVector, x) where  {T <: SinusoidalFunctionParameters}
+function rmse(fit::T, samples::AbstractVector, x) where  {T <: SRModel}
     fitvalues = fit(x)
     return sqrt(sum((fitvalues .- samples).^2) / length(x))
 end
 
 """
-    mae(fit::T, exact::T, x) where {T <: SinusoidalFunctionParameters}
+    mae(fit::T, exact::T, x) where {T <: SRModel}
 
 Calculate the mean absolute error between `fit` and `exact` sampled at collection `x`.
 
 See also: [`rmse`](@ref)
 """
-function mae(fit::T, exact::T, x) where {T <: SinusoidalFunctionParameters}
+function mae(fit::T, exact::T, x) where {T <: SRModel}
     fitvalues = fit(x)
     exactvalues = exact(x)
     return sum(abs.(fitvalues .- exactvalues))/length(x)

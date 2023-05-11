@@ -4,15 +4,14 @@
 #
 
 """
-    Algorithm
+    SRAlgorithm
 
-Supported algorithm types are subtypes of the abstract type `Algorithm`.
-Supertype for the different supported algorithms.
+Supported algorithm types are subtypes of the abstract type `SRAlgorithm`.
 """
-abstract type Algorithm end
+abstract type SRAlgorithm end
 
 """
-    IEEE1057([iterations = 6]) <: Algorithm
+    IEEE1057([iterations = 6]) <: SRAlgorithm
 
 Define an instance of the IEEE 1057 sinusoidal fitting algorithm.
 
@@ -20,12 +19,12 @@ Optional argument `iterations` specifies how many iterations to run before the a
 stops. The default value is 6, which is the value recommended by the standard. This value
 is only used when calculating a 4-parameter fit.
 """
-Base.@kwdef struct IEEE1057 <: Algorithm
+Base.@kwdef struct IEEE1057 <: SRAlgorithm
     iterations::Int = 6
 end
 
 """
-    IntegralEquations() <: Algorithm
+    IntegralEquations() <: SRAlgorithm
 
 Define an instance of the integral-equations sinusoidal fitting algorithm described by
 J.  Jacquelin in "Régressions et équations intégrales", 2014 (available at
@@ -33,10 +32,10 @@ https://fr.scribd.com/doc/14674814/Regressions-et-equations-integrales).
 
 This algorithm does not accept any configuration parameters.
 """
-struct IntegralEquations <: Algorithm end
+struct IntegralEquations <: SRAlgorithm end
 
 """
-    LevMar([use_ga = false]) <: Algorithm
+    LevMar([use_ga = false]) <: SRAlgorithm
 
 Define an instance of the Levenberg-Marquardt sinusoidal fitting algorithm.
 
@@ -44,12 +43,12 @@ If the optional argument `use_ga` is set to `true`, the algorithm will use geode
 acceleration to potentially improve its performance and accuracy. See
 [`curve_fit`](https://github.com/JuliaNLSolvers/LsqFit.jl) for more details.
 """
-Base.@kwdef struct LevMar <: Algorithm
+Base.@kwdef struct LevMar <: SRAlgorithm
     use_ga :: Bool = false
 end
 
 """
-    Liang([threshold = 0.15, iterations = 100, q = 1e-5]) <: Algorithm
+    Liang([threshold = 0.15, iterations = 100, q = 1e-5]) <: SRAlgorithm
 
 Define an instance of the sinusoidal fitting algorithm described in Liang et al,
 "Fitting Algorithm of Sine Wave with Partial Period Waveforms and Non-Uniform Sampling
@@ -60,7 +59,7 @@ This algorithm is designed for scenarios where only a fraction of a period of th
 has been sampled. Its optional parameters `threshold` and `q` are described in the paper.
 Additionally, a maximum number of iterations may be specified in `iterations`.
 """
-Base.@kwdef struct Liang <: Algorithm
+Base.@kwdef struct Liang <: SRAlgorithm
     threshold  :: Float64 = 0.15
     iterations :: Int     = 100
     q          :: Float64 = 1e-5
@@ -71,16 +70,16 @@ end
 #
 
 """
-    Problem
+    SRProblem
 
-Supertype for the different kinds of sinusoidal regression problems.
+Supported problem types are subtypes of the abstract type `SRProblem`.
 """
-abstract type Problem end
+abstract type SRProblem end
 
 const MR = Union{Missing, Real}
 
 """
-    Sin3Problem(X, Y, f , [DC, Q, I, lb, ub]) <: Problem
+    Sin3Problem(X, Y, f , [DC, Q, I, lb, ub]) <: SRProblem
 
 Define a three-parameter sinusoidal regression problem.
 
@@ -94,7 +93,7 @@ may be specified in `lb` and `ub`, which must be vectors of length 3.
 
 See also: [`Sin4Problem`](@ref)
 """
-Base.@kwdef struct Sin3Problem{T1, T2, F<:Real, P1<:MR, P2<:MR, P3<:MR, LB, UB} <: Problem
+Base.@kwdef struct Sin3Problem{T1, T2, F<:Real, P1<:MR, P2<:MR, P3<:MR, LB, UB} <: SRProblem
     X  :: T1  # sampling times
     Y  :: T2  # sample values
     f  :: F  # exact known frequency
@@ -109,7 +108,7 @@ end
 Sin3Problem(X, Y, f ; kwargs...) = Sin3Problem(; X, Y, f, kwargs...)
 
 """
-    Sin4Problem(X, Y ; [f, DC, Q, I, lb, ub]) <: Problem
+    Sin4Problem(X, Y ; [f, DC, Q, I, lb, ub]) <: SRProblem
 
 Define a four-parameter sinusoidal regression problem.
 
@@ -122,7 +121,7 @@ bounds may be specified in `lb` and `ub`, which must be vectors of length 4.
 
 See also: [`Sin3Problem`](@ref)
 """
-Base.@kwdef struct Sin4Problem{T1, T2, P1<:MR, P2<:MR, P3<:MR, P4<:MR, LB, UB} <: Problem
+Base.@kwdef struct Sin4Problem{T1, T2, P1<:MR, P2<:MR, P3<:MR, P4<:MR, LB, UB} <: SRProblem
     X  :: T1  # sampling times
     Y  :: T2  # sample values
     f  :: P1 = missing  # initial estimates (may be missing)
@@ -136,7 +135,7 @@ end
 Sin4Problem(X, Y ; kwargs...) = Sin4Problem(; X, Y, kwargs...)
 
 """
-    MixedLinSin4Problem(X, Y, f ; [DC, Q, I, m, lb, ub])
+    MixedLinSin4Problem(X, Y, f ; [DC, Q, I, m, lb, ub]) <: SRProblem
 
 Define a four-parameter mixed linear-sinusoidal regression problem.
 
@@ -150,7 +149,7 @@ bounds may be specified in `lb` and `ub`, which must be vectors of length 4.
 
 See also: [`MixedLinSin5Problem`](@ref)
 """
-Base.@kwdef struct MixedLinSin4Problem{T1, T2, F<:Real, P1<:MR, P2<:MR, P3<:MR, P4<:MR, LB, UB}
+Base.@kwdef struct MixedLinSin4Problem{T1, T2, F<:Real, P1<:MR, P2<:MR, P3<:MR, P4<:MR, LB, UB} <: SRProblem
     X :: T1
     Y :: T2
     f :: F
@@ -165,7 +164,7 @@ end
 MixedLinSin4Problem(X, Y, f ; kwargs...) = MixedLinSin4Problem(; X, Y, f, kwargs...)
 
 """
-    MixedLinSin5Problem(X, Y ; [f, DC, Q, I, m, lb, ub])
+    MixedLinSin5Problem(X, Y ; [f, DC, Q, I, m, lb, ub]) <: SRProblem
 
 Define a five-parameter mixed linear-sinusoidal regression problem.
 
@@ -178,7 +177,7 @@ bounds may be specified in `lb` and `ub`, which must be vectors of length 5.
 
 See also: [`MixedLinSin4Problem`](@ref)
 """
-Base.@kwdef struct MixedLinSin5Problem{T1, T2, P1<:MR, P2<:MR, P3<:MR, P4<:MR, P5<:MR, LB, UB}
+Base.@kwdef struct MixedLinSin5Problem{T1, T2, P1<:MR, P2<:MR, P3<:MR, P4<:MR, P5<:MR, LB, UB} <: SRProblem
     X :: T1
     Y :: T2
     f  :: P1  = missing
@@ -193,25 +192,25 @@ end
 MixedLinSin5Problem(X, Y ; kwargs...) = MixedLinSin5Problem(; X, Y, kwargs...)
 
 """
-    SinusoidalFunctionParameters
+    SRModel
+
+Supported models types are subtypes of the abstract type `SRModel`.
 
 Supertype for the parameters of the different kinds of sinusoidal models
 supported by SinusoidalRegressions.
 
-See also: [`SinusoidP`](@ref), [`MixedLinearSinusoidP`](@ref)
+See also: [`SinModel`](@ref), [`MixedLinSinModel`](@ref)
 """
-abstract type SinusoidalFunctionParameters end
+abstract type SRModel end
 
 """
-    SinusoidP{T <: Real} <: SinusoidalFunctionParameters
+    SinModel{T <: Real} <: SRModel
 
-Parameters `f`, `DC`, `Q` and `I` of the sinusoidal function
-``s(x) = DC + I\\cos(2πfx) + Q\\sin(2πfx)``.
+Parameters `f`, `DC`, `Q` and `I` of the sinusoidal model ``s(x) = DC + I\\cos(2πfx) + Q\\sin(2πfx)``.
 
-See also: [`MixedLinearSinusoidP`](@ref), [`GenSinusoidP`](@ref) (not yet implemented),
-[`DampedSinusoidP`](@ref) (not yet implemented).
+See also: [`MixedLinSinModel`](@ref).
 """
-struct SinusoidP{T <: Real} <: SinusoidalFunctionParameters
+struct SinModel{T <: Real} <: SRModel
     f  :: T  # frequency in Hz
     DC :: T
     Q  :: T  # sine amplitude
@@ -219,10 +218,9 @@ struct SinusoidP{T <: Real} <: SinusoidalFunctionParameters
 end
 
 """
-    SinusoidP{T}(f, DC, Q, I)
+    SinModel{T}(f, DC, Q, I)
 
-Construct a `SinusoidP{T}` with the given parameters, promoting to a common type `T` if
-necessary.
+Construct a sinusoidal model with the given parameters.
 
 To express the model as ``s(x) = M\\cos(2πfx + θ)``, use the `torect` function.
 
@@ -230,46 +228,45 @@ Examples
 ========
 
 ```
-julia> SinusoidP(10, 1, -0.5, 1.2)
-Sinusoidal parameters SinusoidP{Float64}:
+julia> SinModel(10, 1, -0.5, 1.2)
+Sinusoidal parameters SinModel{Float64}:
   Frequency (Hz)      : 10.0
   DC                  : 1.0
   Sine amplitude (Q)  : -0.5
   Cosine amplitude (I): 1.2
 
-julia> SinusoidP(1, 0, torect(1, -π/2)...)  # A pure sine
-Sinusoidal parameters SinusoidP{Float64}:
+julia> SinModel(1, 0, torect(1, -π/2)...)  # A pure sine
+Sinusoidal parameters SinModel{Float64}:
   Frequency (Hz)      : 1.0
   DC                  : 0.0
   Sine amplitude (Q)  : 1.0
   Cosine amplitude (I): 0.0
 ```
 """
-SinusoidP(f, DC, Q, I) = SinusoidP(promote(f, DC, Q, I)...)
+SinModel(f, DC, Q, I) = SinModel(promote(f, DC, Q, I)...)
 
 """
-    SinusoidP{T}(; f, DC, Q, I)
+    SinModel{T}(; f, DC, Q, I)
 
-Construct a `SinusoidP{T}` specifying each parameter by name, promoting to a common type `T` if
-necessary.
+Construct a `SinModel{T}` specifying each parameter by name.
 
 
 Example
 =======
 
 ```
-julia> SinusoidP(DC = 1, Q = -0.5, I = 1.2, f = 10)
-Sinusoidal parameters SinusoidP{Float64}:
+julia> SinModel(DC = 1, Q = -0.5, I = 1.2, f = 10)
+Sinusoidal parameters SinModel{Float64}:
   Frequency (Hz)      : 10.0
   DC                  : 1.0
   Sine amplitude (Q)  : -0.5
   Cosine amplitude (I): 1.2
 ```
 """
-SinusoidP(; f, DC, Q, I) = SinusoidP(f, DC, Q, I)
+SinModel(; f, DC, Q, I) = SinModel(f, DC, Q, I)
 
 """
-    (P::SinusoidP)(t)
+    (P::SinModel)(t)
 
 Evaluate the sinusoidal function specified by the parameters `P` at the values given
 by `t`, which may be a scalar or a collection.
@@ -278,7 +275,7 @@ Example
 =======
 
 ```
-julia> P = SinusoidP(DC = 1, Q = -0.5, I = 1.2, f = 10)
+julia> P = SinModel(DC = 1, Q = -0.5, I = 1.2, f = 10)
 julia> t = range(0, 0.7, length = 5)
 julia> P(t)
 5-element Vector{Float64}:
@@ -289,10 +286,11 @@ julia> P(t)
   2.200000000000001
 ```
 """
-(params::SinusoidP)(t) = @. params.Q*sin(2π*params.f*t) + params.I*cos(2π*params.f*t) + params.DC
+(params::SinModel)(t) = @. params.Q*sin(2π*params.f*t) + params.I*cos(2π*params.f*t) + params.DC
+#TODO: Remove implicit broadcasting
 
-function Base.show(io::IO, params::SinusoidP{T}) where {T}
-    println(io, "Sinusoidal parameters SinusoidP{$T}:")
+function Base.show(io::IO, params::SinModel{T}) where {T}
+    println(io, "Sinusoidal parameters SinModel{$T}:")
     println(io, "  Frequency (Hz)      : $(params.f)")
     println(io, "  DC                  : $(params.DC)")
     println(io, "  Sine amplitude (Q)  : $(params.Q)")
@@ -300,15 +298,14 @@ function Base.show(io::IO, params::SinusoidP{T}) where {T}
 end
 
 """
-    MixedLinearSinusoidP{T <: Real} <: SinusoidalFunctionParameters
+    MixedLinSinModel{T <: Real} <: SRModel
 
 Parameters `f`, `DC`, `Q`, `I` and `m` of the sinusoidal function
 ``s(x) = DC + mx + I\\cos(2πfx) + Q\\sin(2πfx)``.
 
-See also: [`SinusoidP`](@ref), [`GenSinusoidP`](@ref) (not yet implemented),
-[`DampedSinusoidP`](@ref) (not yet implemented).
+See also: [`SinModel`](@ref).
 """
-struct MixedLinearSinusoidP{T <: Real} <: SinusoidalFunctionParameters
+struct MixedLinSinModel{T <: Real} <: SRModel
     f  :: T  # frequency in Hz
     DC :: T
     Q  :: T  # sine amplitude
@@ -317,17 +314,17 @@ struct MixedLinearSinusoidP{T <: Real} <: SinusoidalFunctionParameters
 end
 
 """
-    MixedLinearSinusoidP{T}(f, DC, Q, I, m)
+    MixedLinSinModel{T}(f, DC, Q, I, m) <: SRModel
 
-Construct a `MixedLinearSinusoidP{T}` with the given parameters, promoting to a common type
+Construct a `MixedLinSinModel{T}` with the given parameters, promoting to a common type
 `T` if necessary.
 
 Example
 =======
 
 ```
-julia> MixedLinearSinusoidP(10, 0, -1.2, 0.4, 2.1)
-Mixed Linear-Sinusoidal parameters MixedLinearSinusoidP{Float64}:
+julia> MixedLinSinModel(10, 0, -1.2, 0.4, 2.1)
+Mixed Linear-Sinusoidal parameters MixedLinSinModel{Float64}:
   Frequency (Hz)       : 10.0
   DC                   : 0.0
   Sine amplitude (Q)   : -1.2
@@ -335,19 +332,19 @@ Mixed Linear-Sinusoidal parameters MixedLinearSinusoidP{Float64}:
   Linear term (m)      : 2.1
 ```
 """
-MixedLinearSinusoidP(f, DC, Q, I, m) = MixedLinearSinusoidP(promote(f, DC, Q, I, m)...)
+MixedLinSinModel(f, DC, Q, I, m) = MixedLinSinModel(promote(f, DC, Q, I, m)...)
 
 """
-    MixedLinearSinusoidP(; f, DC, Q, I, m)
+    MixedLinSinModel(; f, DC, Q, I, m)
 
-Construct a `MixedLinearSinusoidP{T}` specifying each parameter by name.
+Construct a `MixedLinSinModel{T}` specifying each parameter by name.
 
 Example
 =======
 
 ```
-julia> MixedLinearSinusoidP(f = 10, DC = 0, m = 2.1, Q= -1.2, I = 0.4)
-Mixed Linear-Sinusoidal parameters MixedLinearSinusoidP{Float64}:
+julia> MixedLinSinModel(f = 10, DC = 0, m = 2.1, Q= -1.2, I = 0.4)
+Mixed Linear-Sinusoidal parameters MixedLinSinModel{Float64}:
   Frequency (Hz)       : 10.0
   DC                   : 0.0
   Sine amplitude (Q)   : -1.2
@@ -355,10 +352,10 @@ Mixed Linear-Sinusoidal parameters MixedLinearSinusoidP{Float64}:
   Linear term (m)      : 2.1
 ```
 """
-MixedLinearSinusoidP(; f, DC, Q, I, m) = MixedLinearSinusoidP(f, DC, Q, I, m)
+MixedLinSinModel(; f, DC, Q, I, m) = MixedLinSinModel(f, DC, Q, I, m)
 
 """
-    (P::MixedLinearSinusoidP)(t)
+    (P::MixedLinSinModel)(t)
 
 Evaluate the mixed linear-sinusoidal function specified by the parameters `P` at
 the values given by `t`, which may be a scalar or a collection.
@@ -367,7 +364,7 @@ Example
 =======
 
 ```
-julia> P = MixedLinearSinusoidP(f = 10, DC = 0, m = 2.1, Q= -1.2, I = 0.4)
+julia> P = MixedLinSinModel(f = 10, DC = 0, m = 2.1, Q= -1.2, I = 0.4)
 julia> t = range(0, 0.7, length = 5)
 julia> P(t)
 5-element Vector{Float64}:
@@ -378,11 +375,11 @@ julia> P(t)
   1.870000000000002
 ```
 """
-(params::MixedLinearSinusoidP)(t) = @. params.Q*sin(2π*params.f*t) + params.I*cos(2π*params.f*t) +
+(params::MixedLinSinModel)(t) = @. params.Q*sin(2π*params.f*t) + params.I*cos(2π*params.f*t) +
                                        params.m*t + params.DC
 
-function Base.show(io::IO, params::MixedLinearSinusoidP{T}) where {T}
-    println(io, "Mixed Linear-Sinusoidal parameters MixedLinearSinusoidP{$T}:")
+function Base.show(io::IO, params::MixedLinSinModel{T}) where {T}
+    println(io, "Mixed Linear-Sinusoidal parameters MixedLinSinModel{$T}:")
     println(io, "  Frequency (Hz)       : $(params.f)")
     println(io, "  DC                   : $(params.DC)")
     println(io, "  Sine amplitude (Q)   : $(params.Q)")
@@ -393,23 +390,23 @@ end
 ### not yet implemented
 
 """
-    GenSinusoidP <: SinusoidalFunctionParameters
+    GenSinProblem <: SinusoidalFunctionParameters
 
 Not yet implemented.
 
-See also: [`SinusoidP`](@ref), [`MixedLinearSinusoidP`](@ref), [`DampedSinusoidP`](@ref)
+See also: [`SinProblem`](@ref), [`MixedLinSinModel`](@ref), [`DampedSinProblem`](@ref)
 (not yet implemented).
 """
-struct GenSinusoidP
+struct GenSinProblem
 end
 
 """
-    DampedSinusoidP <: SinusoidalFunctionParameters
+    DampedSinProblem <: SinusoidalFunctionParameters
 
 Not yet implemented.
 
-See also: [`SinusoidP`](@ref), [`MixedLinearSinusoidP`](@ref), [`GenSinusoidP`](@ref)
+See also: [`SinProblem`](@ref), [`MixedLinSinModel`](@ref), [`GenSinProblem`](@ref)
 (not yet implemented).
 """
-struct DampedSinusoidP
+struct DampedSinProblem
 end

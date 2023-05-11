@@ -122,6 +122,6 @@ function _jacquelin_mixlinsin(X, Y)
 
     (a3, p3, b3, c3) = P \ x
 
-    return MixedLinearSinusoidP(ω2/(2π), a3, b3, c3, p3)
+    return MixedLinSinModel(ω2/(2π), a3, b3, c3, p3)
 
 end

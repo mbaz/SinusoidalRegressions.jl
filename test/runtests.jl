@@ -46,23 +46,23 @@ end
     @test I      ≈ -0.577491 atol = 0.01
 end
 
-@testset "Polar notation for SinusoidP" begin
-    s = SinusoidP(1, 0, torect(1, 0)...) # A pure cosine
+@testset "Polar notation" begin
+    s = SinModel(1, 0, torect(1, 0)...) # A pure cosine
     @test s.f == 1
     @test s.DC == 0
     @test s.Q ≈ 0
     @test s.I ≈ 1
-    s = SinusoidP(1, 0, torect(1, -π/2)...) # A pure sine
+    s = SinModel(1, 0, torect(1, -π/2)...) # A pure sine
     @test s.f == 1
     @test s.DC == 0
     @test s.Q ≈ 1 atol = 1e-12
     @test s.I ≈ 0 atol = 1e-12
-    s = SinusoidP(1, 0, torect(1, 3π/2)...) # Another pure sine
+    s = SinModel(1, 0, torect(1, 3π/2)...) # Another pure sine
     @test s.f == 1
     @test s.DC == 0
     @test s.Q ≈ 1 atol = 1e-12
     @test s.I ≈ 0 atol = 1e-12
-    s = SinusoidP(1, 5, torect(1, -π/4)...) # A mix
+    s = SinModel(1, 5, torect(1, -π/4)...) # A mix
     @test s.f == 1
     @test s.DC == 5
     @test s.Q ≈ sqrt(2)/2 atol = 1e-12
@@ -74,7 +74,7 @@ end
     t = range(0, 1, length=100)
 
     # Q = 0
-    exact = SinusoidP(f = 3.0, DC = 1.25, I = 4, Q = 0)
+    exact = SinModel(f = 3.0, DC = 1.25, I = 4, Q = 0)
     Y = exact.(t)
     p3 = Sin3Problem(t, Y, 3.0)
     p4 = Sin4Problem(t, Y)
@@ -116,7 +116,7 @@ end
     @test I  ≈ exact.I  atol = 0.0001
 
     # I = 0
-    exact = SinusoidP(f = 3.0, DC = 1.25, I = 0, Q = -2)
+    exact = SinModel(f = 3.0, DC = 1.25, I = 0, Q = -2)
     Y = exact.(t)
     p3 = Sin3Problem(t, Y, 3.0)
     p4 = Sin4Problem(t, Y)
@@ -158,7 +158,7 @@ end
     @test I  ≈ exact.I  atol = 0.0001
 
     # I != 0, Q != 0  -- check fewer digits
-    exact = SinusoidP(f = 2.0, DC = 0.25, I = 0.48, Q = -1.5)
+    exact = SinModel(f = 2.0, DC = 0.25, I = 0.48, Q = -1.5)
     Y = exact.(t)
     p3 = Sin3Problem(t, Y, 2.0)
     p4 = Sin4Problem(t, Y)
@@ -197,7 +197,7 @@ end
 
 @testset "IEEE 1057 4-Parameter specific tests" begin
     t = range(0, 4, length = 1337)
-    exact = SinusoidP(f = 2.0, DC = 0.25, I = 0.48, Q = -1.5)
+    exact = SinModel(f = 2.0, DC = 0.25, I = 0.48, Q = -1.5)
     Y = exact.(t)
     p4 = Sin4Problem(t, Y)
 
@@ -210,7 +210,7 @@ end
     @test I  ≈ exact.I  atol = 0.0001
 
     t = range(0, 1, length = 2313)
-    exact = SinusoidP(f = 3.0, DC = -0.98, I = 2.15, Q = 3.87)
+    exact = SinModel(f = 3.0, DC = -0.98, I = 2.15, Q = 3.87)
     Y = exact.(t)
     p4 = Sin4Problem(t, Y)
     (;f, DC, Q, I) = sinfit(p4, IEEE1057())
@@ -226,8 +226,8 @@ end
          3.28, 3.68, 3.72, 4.26, 4.75, 6.72, 7.75, 8.41, 8.61, 9.17]
     Y = [1.35, 1.95, 2.20, 1.91, 1.88, 2.56, 2.74, 2.33, 2.82, 2.14,
          2.29, 1.76, 2.46, 1.70, 2.20, 4.43, 5.59, 7.03, 7.19, 6.84]
-    actual = MixedLinearSinusoidP(0.8/(2π), 0.4, 1.2, 0.75, 0.6)
-    expected = MixedLinearSinusoidP(0.861918/(2π), 0.571315, 1.113310, 0.613981, 0.582827)
+    actual = MixedLinSinModel(0.8/(2π), 0.4, 1.2, 0.75, 0.6)
+    expected = MixedLinSinModel(0.861918/(2π), 0.571315, 1.113310, 0.613981, 0.582827)
 
     p5 = MixedLinSin5Problem(X, Y)
 
@@ -250,8 +250,8 @@ end
     X = range(start = 0.5, step = 0.5, length = 20)
     Y = [1.66, 2.20, 2.83, 2.66, 2.59, 2.53, 2.12, 1.85, 1.85, 1.97,
          2.16, 2.86, 3.42, 4.56, 5.11, 6.00, 6.91, 7.16, 7.56, 7.41]
-    actual = MixedLinearSinusoidP(0.8/(2π), 0.4, 1.2, 0.75, 0.6)
-    expected = MixedLinearSinusoidP(0.809132/(2π), 0.266603, 1.278916, 0.680126, 0.613464)
+    actual = MixedLinSinModel(0.8/(2π), 0.4, 1.2, 0.75, 0.6)
+    expected = MixedLinSinModel(0.809132/(2π), 0.266603, 1.278916, 0.680126, 0.613464)
 
     p5 = MixedLinSin5Problem(X, Y)
 
@@ -273,7 +273,7 @@ end
 
 @testset "Liang" begin
     t = range(0, 1, length=100)
-    exact = SinusoidP(f = 0.5, DC = 1.2, Q = 0.3, I = 2.4)
+    exact = SinModel(f = 0.5, DC = 1.2, Q = 0.3, I = 2.4)
     Y = exact.(t)
     p4 = Sin4Problem(t, Y)
     a = Liang()
@@ -284,7 +284,7 @@ end
     @test Q  ≈ exact.Q  atol = 0.001
     @test I  ≈ exact.I  atol = 0.001
 
-    exact = SinusoidP(f = 0.3, DC = -1.2, Q = 0.0, I = 0.5)
+    exact = SinModel(f = 0.3, DC = -1.2, Q = 0.0, I = 0.5)
     Y = exact.(t)
     p4 = Sin4Problem(t, Y)
     a = Liang()

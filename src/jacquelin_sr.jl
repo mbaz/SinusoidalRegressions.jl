@@ -55,7 +55,7 @@ function _jacquelin_part1(X, Y)
     b1 = (B1*x1^2 + C1*x1 + D1 - a1) * sin(ω1*x1) + (1/ω1)*(C1 + 2*B1*x1) * cos(ω1*x1)
     c1 = (B1*x1^2 + C1*x1 + D1 - a1) * cos(ω1*x1) - (1/ω1)*(C1 + 2*B1*x1) * sin(ω1*x1)
 
-    return SinusoidP(ω1/(2π), a1, b1, c1) 
+    return SinModel(ω1/(2π), a1, b1, c1) 
 end
 
 function _jacquelin_part2(X, Y, sp)
@@ -102,7 +102,7 @@ function _jacquelin_part2(X, Y, sp)
     b2 = ρ2 * cos(φ2)
     c2 = ρ2 * sin(φ2)
 
-    return SinusoidP(ω2/(2π), a2, b2, c2)
+    return SinModel(ω2/(2π), a2, b2, c2)
 end
 
 function _jacquelin_part3(X, Y, sp)
@@ -124,5 +124,5 @@ function _jacquelin_part3(X, Y, sp)
 
     (a3, b3, c3) = M \ [ Σy, Σysin, Σycos ]
 
-    return SinusoidP(ω3/(2π), a3, b3, c3)
+    return SinModel(ω3/(2π), a3, b3, c3)
 end

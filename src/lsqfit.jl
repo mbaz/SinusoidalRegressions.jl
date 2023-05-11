@@ -29,7 +29,7 @@ function levmar(prob::Sin3Problem, a::LevMar ; kwargs...)
     else
         fit = curve_fit(model, X, Y, guess, lower = lb, upper = ub, kwargs...)
     end
-    return SinusoidP(f, coef(fit)...)
+    return SinModel(f, coef(fit)...)
 end
 
 function levmar(prob::Sin4Problem, a::LevMar ; kwargs...)
@@ -63,7 +63,7 @@ function levmar(prob::Sin4Problem, a::LevMar ; kwargs...)
     else
         fit = curve_fit(model, X, Y, guessarr ; kwargs...)
     end
-    return SinusoidP(coef(fit)...)
+    return SinModel(coef(fit)...)
 end
 
 function levmar(prob::MixedLinSin4Problem, a::LevMar ; kwargs...)
@@ -97,7 +97,7 @@ function levmar(prob::MixedLinSin4Problem, a::LevMar ; kwargs...)
     else
         fit = curve_fit(model, X, Y, guess, lower = lb, upper = ub, kwargs...)
     end
-    return MixedLinearSinusoidP(f, coef(fit)...)
+    return MixedLinSinModel(f, coef(fit)...)
 end
 
 function levmar(prob::MixedLinSin5Problem, a::LevMar ; kwargs...)
@@ -132,5 +132,5 @@ function levmar(prob::MixedLinSin5Problem, a::LevMar ; kwargs...)
     else
         fit = curve_fit(model, X, Y, guess, lower = lb, upper = ub, kwargs...)
     end
-    return MixedLinearSinusoidP(coef(fit)...)
+    return MixedLinSinModel(coef(fit)...)
 end
