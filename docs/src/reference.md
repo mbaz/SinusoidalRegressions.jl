@@ -1,32 +1,25 @@
 # Reference
 
-## Types
+This package's workhorse function is `sinfit(p::SRProblem, a::SRAlgorithm)`. It takes a problem `p`
+and calculates a fit using algorithm `a`.
 
 ```@docs
-SinusoidalFunctionParameters
-SinusoidP
-SinusoidP(::Any, ::Any, ::Any, ::Any)
-SinusoidP(; ::Any, ::Any, ::Any, ::Any)
-SinusoidP(::Any)
-MixedLinearSinusoidP
-MixedLinearSinusoidP(::Any, ::Any, ::Any, ::Any, ::Any)
-MixedLinearSinusoidP(; ::Any, ::Any, ::Any, ::Any, ::Any)
-MixedLinearSinusoidP(::Any)
-SinusoidalRegressions.GenSinusoidP
-SinusoidalRegressions.DampedSinusoidP
+sinfit
 ```
 
-## IEEE 1057
+## Algorithms
+
+### IEEE 1057
 
 Sinusoidal regressions specified by 1057-2017, IEEE Standard for Digitizing
 Waveform Recorders. These are the same algorithms specified in 1241-2010, IEEE
 Standard for Terminology and Test Methods for Analog-to-Digital Converters.
 
 ```@docs
-ieee1057
+IEEE1057
 ```
 
-## Method of integral equations
+### Method of integral equations
 
 Four types of sinusoidal regressions using the algorithms proposed by J.
 Jacquelin in "Régressions et Equations Intégrales". These algorithms are not
@@ -36,19 +29,64 @@ estimates for more-precise least-squares methods based on non-linear
 optimization (described below).
 
 ```@docs
-sinfit_j
-mixlinsinfit_j
+IntegralEquations
 ```
 
-## Non-linear optimization
+### Non-linear optimization
 
-Wrappers for `LsqFit.curve_fit()`, which define the appropriate model,
-calculate initial parameter estimates if not provided by the user, and wrap the
-returned fit in the appropriate subtype of [`SinusoidalFunctionParameters`](@ref).
+Wrapper for `LsqFit.curve_fit()`, which defines the appropriate model,
+calculates initial parameter estimates if not provided by the user, and wraps the
+returned fit in the appropriate parameter container.
 
 ```@docs
-sinfit
-mixlinsinfit
+LevMar
+```
+
+### Liang
+
+Algorithm designed for fitting when only a fraction of a period is sampled.
+
+```@docs
+Liang
+```
+
+## Problems
+
+An `SRProblem` encapsulates what is known: at a minimum, the sampling times and the samples, and
+possibly also estimates or bounds on some or all parameters. The problem type specifies the
+number of unknown parameters, and the model (sinusoidal or mixed linear-sinusoidal).
+
+```@docs
+Sin3Problem
+Sin4Problem
+MixedLinSin4Problem
+MixedLinSin5Problem
+```
+
+## Problem-Algorithm matrix
+
+The following table shows which algorithms can solve which sinusoidal regression problems:
+
+|                         |`IEEE1057` | `IntegralEquations` | `LevMar` | `Liang` |
+|-------------------------|:---------:|:-------------------:|:--------:|:-------:|
+|`Sin3Problem`            | ✓         |                     | ✓        |         |
+|`Sin4Problem`            | ✓         | ✓                   | ✓        | ✓       |
+|`MixedLinearSin4Problem` |           | ✓                   | ✓        |         |
+|`MixedLinearSin5Problem` |           | ✓                   | ✓        |         |
+
+## Sinusoidal parameters
+
+```@docs
+SinModel
+SinModel(::Any, ::Any, ::Any, ::Any)
+SinModel(; ::Any, ::Any, ::Any, ::Any)
+SinModel(::Any)
+MixedLinSinModel
+MixedLinSinModel(::Any, ::Any, ::Any, ::Any, ::Any)
+MixedLinSinModel(; ::Any, ::Any, ::Any, ::Any, ::Any)
+MixedLinSinModel(::Any)
+#SinusoidalRegressions.GenSinModel
+#SinusoidalRegressions.DampedSinModel
 ```
 
 ## Error measurement
@@ -86,7 +124,7 @@ using Plots # hide
 seed!(5678) # hide
 X = range(0, 1, length = 100)
 Y = 2 .+ 3cos.(2*pi*5*X) .- 0.2sin.(2*pi*5*X) .+ 0.1*randn(100)
-fit = ieee1057(X, Y, 5)
+fit = sinfit(Sin3Problem(X, Y, 5), IEEE1057())
 plot(X, fit, fitlabel = "example")
 ```
 
@@ -112,11 +150,19 @@ parenthesis):
 
 ```@example 2
 X = range(0, 1, length = 20)
-exact = SinusoidP(5, 2, -0.2, 3)
+exact = SinModel(5, 2, -0.2, 3)
 Y = exact.(X) .+ 0.3*randn(20)
-fit = sinfit(X, Y)
+fit = sinfit(Sin4Problem(X, Y), IntegralEquations())
 plot(X, Y, fit, exact = exact,
      datalabel = "measurements",
      fitlabel = "NLS",
      exactlabel = "true")
+```
+
+## Abstract types
+
+```@docs
+SRModel
+SRAlgorithm
+SRProblem
 ```
