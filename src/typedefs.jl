@@ -107,6 +107,19 @@ end
 
 Sin3Problem(X, Y, f ; kwargs...) = Sin3Problem(; X, Y, f, kwargs...)
 
+function Base.show(io::IO, problem::Sin3Problem)
+    println(io, "3-Parameter Sinusoidal Problem Sin3Problem:")
+    println(io, "  X                    : $(typeof(problem.X)) with $(length(problem.X)) elements")
+    println(io, "  Y                    : $(typeof(problem.Y)) with $(length(problem.Y)) elements")
+    println(io, "  Frequency (Hz)       : $(problem.f)")
+    println(io, "Parameter estimates:")
+    println(io, "  DC                   : $(problem.DC)")
+    println(io, "  Sine amplitude (Q)   : $(problem.Q)")
+    println(io, "  Cosine amplitude (I) : $(problem.I)")
+    println(io, "  Lower bounds         : $(problem.lb)")
+    println(io, "  Upper bounds         : $(problem.ub)")
+end
+
 """
     Sin4Problem(X, Y ; [f, DC, Q, I, lb, ub]) <: SRProblem
 
@@ -133,6 +146,19 @@ Base.@kwdef struct Sin4Problem{T1, T2, P1<:MR, P2<:MR, P3<:MR, P4<:MR, LB, UB} <
 end
 
 Sin4Problem(X, Y ; kwargs...) = Sin4Problem(; X, Y, kwargs...)
+
+function Base.show(io::IO, problem::Sin4Problem)
+    println(io, "4-Parameter Sinusoidal Problem Sin4Problem:")
+    println(io, "  X                    : $(typeof(problem.X)) with $(length(problem.X)) elements")
+    println(io, "  Y                    : $(typeof(problem.Y)) with $(length(problem.Y)) elements")
+    println(io, "Parameter estimates:")
+    println(io, "  Frequency (Hz)       : $(problem.f)")
+    println(io, "  DC                   : $(problem.DC)")
+    println(io, "  Sine amplitude (Q)   : $(problem.Q)")
+    println(io, "  Cosine amplitude (I) : $(problem.I)")
+    println(io, "  Lower bounds         : $(problem.lb)")
+    println(io, "  Upper bounds         : $(problem.ub)")
+end
 
 """
     MixedLinSin4Problem(X, Y, f ; [DC, Q, I, m, lb, ub]) <: SRProblem
@@ -163,6 +189,20 @@ end
 
 MixedLinSin4Problem(X, Y, f ; kwargs...) = MixedLinSin4Problem(; X, Y, f, kwargs...)
 
+function Base.show(io::IO, problem::MixedLinSin4Problem)
+    println(io, "4-Parameter Mixed Linear-Sinusoidal Problem MixedLinSin4Problem:")
+    println(io, "  X                    : $(typeof(problem.X)) with $(length(problem.X)) elements")
+    println(io, "  Y                    : $(typeof(problem.Y)) with $(length(problem.Y)) elements")
+    println(io, "  Frequency (Hz)       : $(problem.f)")
+    println(io, "Parameter estimates:")
+    println(io, "  DC                   : $(problem.DC)")
+    println(io, "  Sine amplitude (Q)   : $(problem.Q)")
+    println(io, "  Cosine amplitude (I) : $(problem.I)")
+    println(io, "  Linear term (m)      : $(problem.m)")
+    println(io, "  Lower bounds         : $(problem.lb)")
+    println(io, "  Upper bounds         : $(problem.ub)")
+end
+
 """
     MixedLinSin5Problem(X, Y ; [f, DC, Q, I, m, lb, ub]) <: SRProblem
 
@@ -190,6 +230,20 @@ Base.@kwdef struct MixedLinSin5Problem{T1, T2, P1<:MR, P2<:MR, P3<:MR, P4<:MR, P
 end
 
 MixedLinSin5Problem(X, Y ; kwargs...) = MixedLinSin5Problem(; X, Y, kwargs...)
+
+function Base.show(io::IO, problem::MixedLinSin5Problem)
+    println(io, "5-Parameter Mixed Linear-Sinusoidal Problem MixedLinSin5Problem:")
+    println(io, "  X                    : $(typeof(problem.X)) with $(length(problem.X)) elements")
+    println(io, "  Y                    : $(typeof(problem.Y)) with $(length(problem.Y)) elements")
+    println(io, "Parameter estimates:")
+    println(io, "  Frequency (Hz)       : $(problem.f)")
+    println(io, "  DC                   : $(problem.DC)")
+    println(io, "  Sine amplitude (Q)   : $(problem.Q)")
+    println(io, "  Cosine amplitude (I) : $(problem.I)")
+    println(io, "  Linear term (m)      : $(problem.m)")
+    println(io, "  Lower bounds         : $(problem.lb)")
+    println(io, "  Upper bounds         : $(problem.ub)")
+end
 
 """
     SRModel
@@ -289,12 +343,12 @@ julia> P(t)
 (params::SinModel)(t) = @. params.Q*sin(2π*params.f*t) + params.I*cos(2π*params.f*t) + params.DC
 #TODO: Remove implicit broadcasting
 
-function Base.show(io::IO, params::SinModel{T}) where {T}
-    println(io, "Sinusoidal parameters SinModel{$T}:")
-    println(io, "  Frequency (Hz)      : $(params.f)")
-    println(io, "  DC                  : $(params.DC)")
-    println(io, "  Sine amplitude (Q)  : $(params.Q)")
-    println(io, "  Cosine amplitude (I): $(params.I)")
+function Base.show(io::IO, model::SinModel{T}) where {T}
+    println(io, "Sinusoidal model SinModel{$T}:")
+    println(io, "  Frequency (Hz)       : $(model.f)")
+    println(io, "  DC                   : $(model.DC)")
+    println(io, "  Sine amplitude (Q)   : $(model.Q)")
+    println(io, "  Cosine amplitude (I) : $(model.I)")
 end
 
 """
@@ -378,34 +432,34 @@ julia> P(t)
 (params::MixedLinSinModel)(t) = @. params.Q*sin(2π*params.f*t) + params.I*cos(2π*params.f*t) +
                                        params.m*t + params.DC
 
-function Base.show(io::IO, params::MixedLinSinModel{T}) where {T}
-    println(io, "Mixed Linear-Sinusoidal parameters MixedLinSinModel{$T}:")
-    println(io, "  Frequency (Hz)       : $(params.f)")
-    println(io, "  DC                   : $(params.DC)")
-    println(io, "  Sine amplitude (Q)   : $(params.Q)")
-    println(io, "  Cosine amplitude (I) : $(params.I)")
-    println(io, "  Linear term (m)      : $(params.m)")
+function Base.show(io::IO, model::MixedLinSinModel{T}) where {T}
+    println(io, "Mixed Linear-Sinusoidal model MixedLinSinModel{$T}:")
+    println(io, "  Frequency (Hz)       : $(model.f)")
+    println(io, "  DC                   : $(model.DC)")
+    println(io, "  Sine amplitude (Q)   : $(model.Q)")
+    println(io, "  Cosine amplitude (I) : $(model.I)")
+    println(io, "  Linear term (m)      : $(model.m)")
 end
 
 ### not yet implemented
 
 """
-    GenSinProblem <: SinusoidalFunctionParameters
+    GenSinModel <: SinModel
 
 Not yet implemented.
 
-See also: [`SinProblem`](@ref), [`MixedLinSinModel`](@ref), [`DampedSinProblem`](@ref)
+See also: [`SinModel`](@ref), [`MixedLinSinModel`](@ref), [`DampedSinModel`](@ref)
 (not yet implemented).
 """
-struct GenSinProblem
+struct GenSinModel
 end
 
 """
-    DampedSinProblem <: SinusoidalFunctionParameters
+    DampedSinModel <: SinModel
 
 Not yet implemented.
 
-See also: [`SinProblem`](@ref), [`MixedLinSinModel`](@ref), [`GenSinProblem`](@ref)
+See also: [`SinModel`](@ref), [`MixedLinSinModel`](@ref), [`GenSinModel`](@ref)
 (not yet implemented).
 """
 struct DampedSinProblem

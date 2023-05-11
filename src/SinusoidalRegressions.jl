@@ -32,7 +32,7 @@ include("liang.jl")
 include("plotrecipes.jl")
 
 """
-    sinfit(problem::Problem, algorithm::Algorithm)
+    sinfit(problem::SRProblem, algorithm::SRAlgorithm)
 
 Calculate a sinosoidal regression on `problem` using `algorithm`.
 
@@ -53,15 +53,20 @@ Example
 
 ```
 julia> using SinusoidalRegressions
-julia> t = range(0, 1, length = 100)                  # time instants
+julia> t = collect(range(0, 1, length = 100))         # time instants
 julia> s = sin.(2*pi*15*t .+ pi/4) .+ 0.1*randn(100)  # noisy samples
 julia> p = Sin3Problem(t, s, 15)                      # define regression problem
 julia> sinfit(p, IEEE1057())                          # calculate fit with IEEE 1057
-Sinusoidal parameters SinModel{Float64}:
-  Frequency (Hz)      : 15.0
-  DC                  : -0.01067218324878172
-  Sine amplitude (Q)  : 0.7299806464221965
-  Cosine amplitude (I): 0.6822068658523716
+3-Parameter Sinusoidal Problem Sin3Problem:
+  X                    : Vector{Float64} with 100 elements
+  Y                    : Vector{Float64} with 100 elements
+  Frequency (Hz)       : 15
+Parameter estimates:
+  DC                   : missing
+  Sine amplitude (Q)   : missing
+  Cosine amplitude (I) : missing
+  Lower bounds         : missing
+  Upper bounds         : missing
 ```
 
 See the documentation for more details.
