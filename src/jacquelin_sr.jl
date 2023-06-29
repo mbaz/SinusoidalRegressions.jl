@@ -50,7 +50,8 @@ function _jacquelin_part1(X, Y)
     (A1, B1, C1, D1) = M \ [ΣySS, Σyx², Σyx, Σy]
 
     x1 = X[1]
-    ω1 = sqrt(-A1)
+    #ω1 = sqrt(-A1)
+    ω1 = sqrt(abs(A1))  # TODO: check this. Problem: sometimes A1 is positive.
     a1 = 2*B1 / (ω1^2)
     b1 = (B1*x1^2 + C1*x1 + D1 - a1) * sin(ω1*x1) + (1/ω1)*(C1 + 2*B1*x1) * cos(ω1*x1)
     c1 = (B1*x1^2 + C1*x1 + D1 - a1) * cos(ω1*x1) - (1/ω1)*(C1 + 2*B1*x1) * sin(ω1*x1)
