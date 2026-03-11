@@ -3,11 +3,12 @@ using Test, SinusoidalRegressions, Aqua
 @testset "AQUA" begin
     Aqua.test_unbound_args(SinusoidalRegressions)
     Aqua.test_undefined_exports(SinusoidalRegressions)
-    Aqua.test_piracy(SinusoidalRegressions)
-    Aqua.test_project_toml_formatting(SinusoidalRegressions)
+    Aqua.test_project_extras(SinusoidalRegressions)
     Aqua.test_stale_deps(SinusoidalRegressions)
+    Aqua.test_deps_compat(SinusoidalRegressions)
+    Aqua.test_piracies(SinusoidalRegressions)
     Aqua.test_unbound_args(SinusoidalRegressions)
-    Aqua.test_undefined_exports(SinusoidalRegressions)
+    Aqua.test_persistent_tasks(SinusoidalRegressions)
 end
 
 @testset "Example 1 from Jacquelin's paper: sinusoidal regression" begin
